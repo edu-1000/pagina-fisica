@@ -309,6 +309,9 @@
         .teacher-suggested-q {
             background: #ffffff; border: 1px solid var(--border-soft); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.88rem;
         }
+        .custom-q-builder {
+            background: #f0fdf4; border: 1.5px dashed #86efac; padding: 1.2rem; border-radius: 10px; margin-top: 1.2rem;
+        }
 
         .comment-box-list {
             background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
@@ -415,7 +418,7 @@
             </div>
         </div>
 
-        <!-- 3. CONFIGURACIÓN DE PREGUNTAS (DOCENTE) -->
+        <!-- 3. CONFIGURACIÓN DE PREGUNTAS Y PROPUESTA DE NUEVAS PREGUNTAS (DOCENTE) -->
         <div id="view-teacher-config" class="view">
             <div class="form-card" style="max-width: 950px;">
                 <button class="btn-secondary" onclick="switchView('view-teacher-register')" style="margin-bottom: 1rem;">← Cambiar Capítulo</button>
@@ -495,7 +498,7 @@
         <div id="view-teacher-bank-detail" class="view">
             <div class="form-card" style="max-width: 950px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: #1e3a8a;">Banco de Preguntas y Respuestas Oficiales</h3>
+                    <h3 style="margin: 0; color: #1e3a8a;" id="teacher-bank-header-title">Banco de Preguntas y Respuestas Oficiales</h3>
                     <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')">← Volver al Panel de Notas</button>
                 </div>
                 <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">A continuación se muestran las preguntas, alternativas y la respuesta correcta del capítulo seleccionado para esta clase en específico:</p>
@@ -626,6 +629,31 @@
     <script src="pregunta.js"></script>
 
     <script>
+        // Diccionario oficial unificado de nombres para los Capítulos (1 al 9)
+        const chapterNames = {
+            1: "Vectores y Unidades",
+            2: "Cinemática Unidimensional",
+            3: "Dinámica y Leyes de Newton",
+            4: "Movimiento en Dos Dimensions",
+            5: "Trabajo y Energía",
+            6: "Cantidad de Movimiento y Colisiones",
+            7: "Rotación de Cuerpos Rígidos",
+            8: "Oscilaciones y Ondas",
+            9: "Termodinámica y Calor"
+        };
+
+        const chapterColors = {
+            1: "#1e3a8a",
+            2: "#7c3aed",
+            3: "#047857",
+            4: "#d97706",
+            5: "#dc2626",
+            6: "#0891b2",
+            7: "#4f46e5",
+            8: "#db2777",
+            9: "#57534e"
+        };
+
         // Configuración de Firebase Realtime Database
         const firebaseConfig = {
             apiKey: "AIzaSyDGh2mQiNkVyv5E15v7LqK8bQ39c5mZ8v4",
@@ -648,6 +676,7 @@
         let cachedStudentsData = {};
         let activeQuestionsRendered = [];
         let temporaryStudentScoreData = null;
+        let teacherCustomQuestions = {}; // Almacena preguntas propuestas/personalizadas por el docente por video
 
         window.onload = function() {
             renderChapterSelectionCards();
@@ -659,35 +688,11 @@
             window.scrollTo(0, 0);
         }
 
-        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON LOGOTIPO Y TÍTULO LIMPIO (DESDE pregunta.js) ---
+        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON FORMATO "Capítulo X: Nombre" ---
         function renderChapterSelectionCards() {
             const container = document.getElementById('chapters-cards-container');
             if(!container || typeof bancoPreguntas === 'undefined') return;
             container.innerHTML = '';
-
-            const chapterNames = {
-                1: "Vectores y Unidades",
-                2: "Cinemática Unidimensional",
-                3: "Dinámica y Leyes de Newton",
-                4: "Movimiento en Dos Dimensiones",
-                5: "Trabajo y Energía",
-                6: "Cantidad de Movimiento y Colisiones",
-                7: "Rotación de Cuerpos Rígidos",
-                8: "Oscilaciones y Ondas",
-                9: "Termodinámica y Calor"
-            };
-
-            const chapterColors = {
-                1: "#1e3a8a",
-                2: "#7c3aed",
-                3: "#047857",
-                4: "#d97706",
-                5: "#dc2626",
-                6: "#0891b2",
-                7: "#4f46e5",
-                8: "#db2777",
-                9: "#57534e"
-            };
 
             for(let capId in bancoPreguntas) {
                 let titleName = chapterNames[capId] || `Capítulo ${capId}`;
@@ -712,7 +717,7 @@
             }
         }
 
-        // --- CONFIGURACIÓN DE VIDEOS Y PREGUNTAS (DESDE pregunta.js) ---
+        // --- CONFIGURACIÓN DE PREGUNTAS Y PROPUESTA DE NUEVAS PREGUNTAS (DOCENTE) ---
         function goToTeacherConfig() {
             const teacherName = document.getElementById('t-teachername').value.trim();
             const className = document.getElementById('t-classname').value.trim();
@@ -730,8 +735,10 @@
                 chapterId: selectedChapterId
             };
 
+            let capTitleFull = `Capítulo ${selectedChapterId}: ${chapterNames[selectedChapterId] || ''}`;
+
             document.getElementById('teacher-config-header-info').innerHTML = `
-                <h3 style="color:#1e3a8a;">Configuración de Preguntas - Capítulo ${selectedChapterId}</h3>
+                <h3 style="color:#1e3a8a;">Configuración de Preguntas - ${capTitleFull}</h3>
                 <p style="font-size:0.88rem; color:var(--text-muted);">Clase: <strong>${className}</strong> | Docente: <strong>${teacherName}</strong></p>
             `;
 
@@ -747,31 +754,122 @@
                         <h4 style="margin:0 0 0.3rem 0; color:var(--text-main); font-family:Georgia, serif;">${vid.titulo}</h4>
                         <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${vid.tema}</p>
                         <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; color:#1e3a8a;">Preguntas oficiales del banco asociadas a este video:</div>
+                        <div id="official-q-list-${vIdx}"></div>
+
+                        <!-- Sección mejorada para que la docente proponga o reemplace preguntas -->
+                        <div class="custom-q-builder">
+                            <h5 style="margin:0 0 0.5rem 0; color:#065f46; font-size:0.92rem;">💡 Proponer o Reemplazar Pregunta para este Video</h5>
+                            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">Agregue una nueva pregunta alternativa para enriquecer la evaluación y evitar que sea repetitiva:</p>
+                            
+                            <div class="form-field" style="margin-bottom:0.6rem;">
+                                <label style="font-size:0.75rem;">Enunciado de la Pregunta:</label>
+                                <input type="text" id="custom-q-text-${vIdx}" placeholder="Ej: ¿Qué ocurre con el coeficiente si..." style="font-size:0.88rem; padding:0.6rem;">
+                            </div>
+                            <div class="form-grid" style="margin-top:0; gap:0.6rem;">
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa A:</label>
+                                    <input type="text" id="custom-q-a-${vIdx}" placeholder="Opción A" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa B:</label>
+                                    <input type="text" id="custom-q-b-${vIdx}" placeholder="Opción B" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa C:</label>
+                                    <input type="text" id="custom-q-c-${vIdx}" placeholder="Opción C" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa D:</label>
+                                    <input type="text" id="custom-q-d-${vIdx}" placeholder="Opción D" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                            </div>
+                            <div class="form-grid" style="margin-top:0.6rem; gap:0.6rem;">
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Respuesta Correcta:</label>
+                                    <select id="custom-q-correct-${vIdx}" style="font-size:0.85rem; padding:0.5rem;">
+                                        <option value="0">Opción A</option>
+                                        <option value="1">Opción B</option>
+                                        <option value="2">Opción C</option>
+                                        <option value="3">Opción D</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Explicación Didáctica:</label>
+                                    <input type="text" id="custom-q-exp-${vIdx}" placeholder="Por qué es correcta..." style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-secondary" onclick="addCustomTeacherQuestion('${vid.id}', ${vIdx})" style="margin-top:0.8rem; background:#059669; color:#fff; border:none; width:100%; justify-content:center;">➕ Agregar Pregunta Propuesta</button>
+                            <div id="custom-q-status-${vIdx}" style="font-size:0.8rem; color:#059669; margin-top:0.4rem; font-weight:600;"></div>
+                        </div>
                     `;
 
+                    vidContainer.appendChild(vidBox);
+
+                    // Renderizar las preguntas oficiales asociadas
+                    let qListDiv = vidBox.querySelector(`#official-q-list-${vIdx}`);
                     vid.preguntas.forEach((q, qIdx) => {
                         let qDiv = document.createElement('div');
                         qDiv.className = 'teacher-suggested-q';
                         qDiv.innerHTML = `<strong>P${qIdx+1}:</strong> ${q.pregunta}<br><span style="color:#059669; font-size:0.82rem;">Respuesta correcta: Opción ${String.fromCharCode(65 + q.correcta)}</span>`;
-                        vidBox.appendChild(qDiv);
+                        qListDiv.appendChild(qDiv);
                     });
-
-                    vidContainer.appendChild(vidBox);
                 });
             }
 
             switchView('view-teacher-config');
         }
 
+        function addCustomTeacherQuestion(videoId, vIdx) {
+            let qText = document.getElementById(`custom-q-text-${vIdx}`).value.trim();
+            let optA = document.getElementById(`custom-q-a-${vIdx}`).value.trim();
+            let optB = document.getElementById(`custom-q-b-${vIdx}`).value.trim();
+            let optC = document.getElementById(`custom-q-c-${vIdx}`).value.trim();
+            let optD = document.getElementById(`custom-q-d-${vIdx}`).value.trim();
+            let correctIdx = parseInt(document.getElementById(`custom-q-correct-${vIdx}`).value);
+            let explanation = document.getElementById(`custom-q-exp-${vIdx}`).value.trim();
+
+            if(!qText || !optA || !optB || !optC || !optD || !explanation) {
+                alert('Por favor, complete todos los campos de la pregunta propuesta.');
+                return;
+            }
+
+            let newCustomQ = {
+                pregunta: qText,
+                opciones: [optA, optB, optC, optD],
+                correcta: correctIdx,
+                explicacion: explanation
+            };
+
+            if(!teacherCustomQuestions[videoId]) {
+                teacherCustomQuestions[videoId] = [];
+            }
+            teacherCustomQuestions[videoId].push(newCustomQ);
+
+            document.getElementById(`custom-q-status-${vIdx}`).textContent = `✔ ¡Pregunta propuesta agregada correctamente (${teacherCustomQuestions[videoId].length} adicional/es)!`;
+            
+            // Limpiar campos
+            document.getElementById(`custom-q-text-${vIdx}`).value = '';
+            document.getElementById(`custom-q-a-${vIdx}`).value = '';
+            document.getElementById(`custom-q-b-${vIdx}`).value = '';
+            document.getElementById(`custom-q-c-${vIdx}`).value = '';
+            document.getElementById(`custom-q-d-${vIdx}`).value = '';
+            document.getElementById(`custom-q-exp-${vIdx}`).value = '';
+        }
+
         function saveTeacherConfiguration() {
+            let payloadConfig = {
+                ...classroomConfig,
+                customQuestions: teacherCustomQuestions
+            };
+
             db.ref('classes/' + classroomConfig.className).set({
-                config: classroomConfig,
+                config: payloadConfig,
                 createdAt: Date.now()
             }, (error) => {
                 if(error) {
                     alert('Error al conectar con la base de datos.');
                 } else {
-                    alert('¡Clase creada exitosamente!');
+                    alert('¡Clase creada y configurada exitosamente!');
                     listenToClassroomData();
                     switchView('view-teacher-dashboard');
                 }
@@ -795,13 +893,8 @@
                 return;
             }
 
-            const chapterNames = {
-                1: "Vectores y Unidades", 2: "Cinemática Unidimensional", 3: "Dinámica y Leyes de Newton",
-                4: "Movimiento en Dos Dimensiones", 5: "Trabajo y Energía", 6: "Cantidad de Movimiento y Colisiones",
-                7: "Rotación de Cuerpos Rígidos", 8: "Oscilaciones y Ondas", 9: "Termodinámica y Calor"
-            };
-
             let capTitleName = chapterNames[capId] || `Capítulo ${capId}`;
+            document.getElementById('teacher-bank-header-title').textContent = `Capítulo ${capId}: ${capTitleName} - Banco de Preguntas y Respuestas`;
 
             let html = `
                 <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; border:1.5px solid var(--border-soft);">
@@ -811,6 +904,9 @@
             `;
 
             chapterData.videos.forEach((video, vIdx) => {
+                let customQsForThisVid = (classroomConfig.customQuestions && classroomConfig.customQuestions[video.id]) ? classroomConfig.customQuestions[video.id] : [];
+                let allVideoQuestions = [...video.preguntas, ...customQsForThisVid];
+
                 html += `
                     <div style="background:#fff; border:1.5px solid var(--border-strong); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">
                         <h4 style="margin:0 0 0.3rem 0; color:#1e3a8a; font-family:Georgia, serif;">${video.titulo}</h4>
@@ -818,10 +914,12 @@
                         <p style="margin:0 0 1rem 0; font-size:0.88rem; background:#f1f5f9; padding:0.6rem; border-radius:6px;"><strong>Objetivo del Video:</strong> ${video.objetivoVideo}</p>
                 `;
 
-                video.preguntas.forEach((q, qIdx) => {
+                allVideoQuestions.forEach((q, qIdx) => {
+                    let isCustomBadge = qIdx >= video.preguntas.length ? '<span style="background:#d1fae5; color:#065f46; font-size:0.75rem; padding:2px 6px; border-radius:4px; margin-left:6px;">Pregunta Propuesta por Docente</span>' : '';
+                    
                     html += `
                         <div style="margin-top:1rem; padding:1rem; background:#fffdf5; border:1px solid #fde047; border-radius:8px;">
-                            <div style="font-weight:700; font-size:0.92rem; margin-bottom:0.6rem;">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
+                            <div style="font-weight:700; font-size:0.92rem; margin-bottom:0.6rem;">Pregunta ${qIdx + 1}: ${q.pregunta} ${isCustomBadge}</div>
                             <ul style="margin:0 0 0.6rem 0; padding-left:1.2rem; font-size:0.9rem;">
                     `;
 
@@ -850,10 +948,12 @@
         function listenToClassroomData() {
             if(!classroomConfig) return;
 
+            let capTitleFull = `Capítulo ${classroomConfig.chapterId}: ${chapterNames[classroomConfig.chapterId] || ''}`;
+
             document.getElementById('docente-info-banner').innerHTML = `
                 📌 <strong>Clase Activa:</strong> ${classroomConfig.className} | 
                 👨‍🏫 <strong>Docente:</strong> ${classroomConfig.teacherName} | 
-                📖 <strong>Capítulo Asignado:</strong> ${classroomConfig.chapterId}
+                📖 <strong>Asignado:</strong> ${capTitleFull}
             `;
 
             db.ref('classes/' + classroomConfig.className + '/students').on('value', (snapshot) => {
@@ -964,7 +1064,7 @@
             document.getElementById('stat-comments-count').textContent = `${evals.length} comentarios registrados`;
         }
 
-        // --- ENTORNO DEL ESTUDIANTE (CON videos.js y pregunta.js) ---
+        // --- ENTORNO DEL ESTUDIANTE (CON videos.js y pregunta.js + preguntas personalizadas) ---
         function studentEnter() {
             const name = document.getElementById('s-name').value.trim();
             const code = document.getElementById('s-code').value.trim();
@@ -1008,12 +1108,13 @@
         function buildStudentWorkspace() {
             let chapterId = currentStudent.chapterId;
             let chapterData = bancoPreguntas[chapterId];
+            let capTitleFull = `Capítulo ${chapterId}: ${chapterNames[chapterId] || ''}`;
 
             document.getElementById('workspace-chapter-banner').innerHTML = `
                 <div class="chapter-header-box">
                     <div class="chapter-header-icon">${chapterId}</div>
                     <div>
-                        <h3 style="margin:0 0 0.3rem 0; font-family:Georgia, serif; color:var(--text-main);">Capítulo ${chapterId}: Demostraciones de Física</h3>
+                        <h3 style="margin:0 0 0.3rem 0; font-family:Georgia, serif; color:var(--text-main);">${capTitleFull}</h3>
                         <p style="margin:0 0 0.5rem 0; font-weight:600; font-size:0.9rem; color:#059669;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
                         <div class="lab-info-card"><strong>Introducción para el laboratorio:</strong> ${chapterData.introLab}</div>
                     </div>
@@ -1025,8 +1126,11 @@
             activeQuestionsRendered = [];
 
             chapterData.videos.forEach((vid, vIdx) => {
-                // Enlace automático con videoMapping definido en videos.js
                 let videoObjUrl = (typeof videoMapping !== 'undefined' && videoMapping[vid.id]) ? videoMapping[vid.id] : "";
+                
+                // Combinar preguntas oficiales con las propuestas/personalizadas por la docente si existen
+                let customQs = (classroomConfig.customQuestions && classroomConfig.customQuestions[vid.id]) ? classroomConfig.customQuestions[vid.id] : [];
+                let videoQuestionsToRender = [...vid.preguntas, ...customQs];
 
                 let vCard = document.createElement('div');
                 vCard.className = 'video-card';
@@ -1048,7 +1152,7 @@
                 `;
 
                 let qListContainer = vCard.querySelector(`#quiz-items-${vIdx}`);
-                vid.preguntas.forEach((q, qIdx) => {
+                videoQuestionsToRender.forEach((q, qIdx) => {
                     let globalQId = `v${vIdx}_q${qIdx}`;
                     activeQuestionsRendered.push({
                         id: globalQId,
