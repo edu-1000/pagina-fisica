@@ -310,9 +310,6 @@
         .teacher-suggested-q {
             background: #ffffff; border: 1px solid var(--border-soft); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.88rem;
         }
-        .custom-q-builder {
-            background: #f0fdf4; border: 1px dashed #86efac; padding: 1rem; border-radius: 8px; margin-top: 1rem;
-        }
 
         .comment-box-list {
             background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
@@ -433,9 +430,15 @@
         <div id="view-teacher-dashboard" class="view">
             <div class="alert-banner-docente" id="docente-info-banner"></div>
             
-            <!-- BOTÓN AÑADIDO PARA LA DOCENTE: VER BANCO DE PREGUNTAS Y RESPUESTAS -->
-            <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
-                <button class="btn-secondary" onclick="switchView('view-teacher-question-bank')" style="background: #1e3a8a; color: #fff; border: none; padding: 0.7rem 1.2rem; font-weight: 700;">📚 Ver Banco de Preguntas y Respuestas</button>
+            <!-- OPCIÓN ADICIONAL SOLICITADA PARA LA DOCENTE: VER BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO -->
+            <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="margin:0; color:var(--text-main); font-family:Georgia, serif;">Panel de Control de la Clase</h3>
+                </div>
+                <div>
+                    <button class="btn-secondary" onclick="openTeacherQuestionBank()" style="background: #1e3a8a; color: #fff; border: none; padding: 0.7rem 1.2rem; font-weight: 700;">📖 Ver Banco de Preguntas del Capítulo</button>
+                    <button class="btn-secondary" onclick="window.print()" style="background:#059669; color:#fff; border:none; padding: 0.7rem 1.2rem; font-weight: 700;">🖨️ Imprimir Reporte / Guardar PDF</button>
+                </div>
             </div>
 
             <div class="teacher-stats-grid">
@@ -462,7 +465,6 @@
 
             <div class="dashboard-header">
                 <h3 style="margin:0; color:var(--text-main); font-family:Georgia, serif;">Registro y Calificación de Alumnos</h3>
-                <button class="btn-secondary" onclick="window.print()" style="background:#059669; color:#fff; border:none;">🖨️ Imprimir Reporte / Guardar PDF</button>
             </div>
 
             <div class="dashboard-table-container">
@@ -491,23 +493,16 @@
             <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-top: 2rem;">Cerrar Sesión Docente</button>
         </div>
 
-        <!-- 4.1 INTERFAZ DE CONSULTA DE PREGUNTAS Y RESPUESTAS PARA LA DOCENTE -->
-        <div id="view-teacher-question-bank" class="view">
+        <!-- 4.1 VISTA ADICIONAL: BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO (SOLO LECTURA PARA DOCENTE) -->
+        <div id="view-teacher-bank-detail" class="view">
             <div class="form-card" style="max-width: 950px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="margin: 0; color: #1e3a8a;">Consulta de Preguntas, Alternativas y Respuestas</h3>
+                    <h3 style="margin: 0; color: #1e3a8a;">Banco de Preguntas y Respuestas Oficiales</h3>
                     <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')">← Volver al Panel de Notas</button>
                 </div>
-                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Seleccione un capítulo para verificar el contenido teórico, las alternativas y cuál es la respuesta correcta marcada para orientar a sus alumnos sin salir de la plataforma.</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">A continuación se muestran las preguntas, alternativas y la respuesta correcta del capítulo seleccionado para esta clase en específico:</p>
                 
-                <div class="form-field" style="margin-bottom: 1.5rem;">
-                    <label>Seleccionar Capítulo a Consultar:</label>
-                    <select id="teacher-bank-chapter-select" onchange="renderTeacherQuestionBank()" style="padding: 0.8rem; border-radius: 8px; border: 1.5px solid var(--border-strong);">
-                        <!-- Opciones cargadas dinámicamente -->
-                    </select>
-                </div>
-
-                <div id="teacher-bank-content-container"></div>
+                <div id="teacher-bank-detail-container"></div>
 
                 <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')" style="margin-top: 2rem;">← Volver al Panel de Notas</button>
             </div>
@@ -658,75 +653,12 @@
 
         window.onload = function() {
             renderChapterSelectionCards();
-            initTeacherBankSelector();
         };
 
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             window.scrollTo(0, 0);
-            if(viewId === 'view-teacher-question-bank') {
-                renderTeacherQuestionBank();
-            }
-        }
-
-        // --- FUNCIONES PARA EL BANCO DE PREGUNTAS DE LA DOCENTE ---
-        function initTeacherBankSelector() {
-            const select = document.getElementById('teacher-bank-chapter-select');
-            if(!select || typeof bancoPreguntas === 'undefined') return;
-            select.innerHTML = '';
-            for(let capId in bancoPreguntas) {
-                let opt = document.createElement('option');
-                opt.value = capId;
-                opt.textContent = `Capítulo ${capId}: ${bancoPreguntas[capId].objGeneral.substring(0, 70)}...`;
-                select.appendChild(opt);
-            }
-        }
-
-        function renderTeacherQuestionBank() {
-            const select = document.getElementById('teacher-bank-chapter-select');
-            const container = document.getElementById('teacher-bank-content-container');
-            if(!select || !container || typeof bancoPreguntas === 'undefined') return;
-
-            let capId = select.value;
-            let chapterData = bancoPreguntas[capId];
-            if(!chapterData) {
-                container.innerHTML = '<p>No hay datos para este capítulo.</p>';
-                return;
-            }
-
-            let html = `<div style="background:#f8fafc; padding:1rem; border-radius:10px; margin-bottom:1.5rem; border:1px solid var(--border-soft);">
-                <strong>Objetivo General:</strong> ${chapterData.objGeneral}<br>
-                <strong>Introducción:</strong> ${chapterData.introLab}
-            </div>`;
-
-            chapterData.videos.forEach(video => {
-                html += `<div style="background:#fff; border:1.5px solid var(--border-strong); border-radius:12px; padding:1.2rem; margin-bottom:1.2rem;">
-                    <h4 style="margin:0 0 0.3rem 0; color:#1e3a8a; font-family:Georgia, serif;">${video.titulo}</h4>
-                    <p style="margin:0 0 0.8rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${video.tema}</p>
-                    <p style="margin:0 0 1rem 0; font-size:0.88rem; background:#f1f5f9; padding:0.6rem; border-radius:6px;"><strong>Objetivo del Video:</strong> ${video.objetivoVideo}</p>`;
-                
-                video.preguntas.forEach((q, qIdx) => {
-                    html += `<div style="margin-top:1rem; padding:0.8rem; background:#fffdf5; border:1px solid #fde047; border-radius:8px;">
-                        <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem;">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
-                        <ul style="margin:0 0 0.5rem 0; padding-left:1.2rem; font-size:0.88rem;">`;
-                    
-                    q.opciones.forEach((opt, optIdx) => {
-                        let isCorrect = (optIdx === q.correcta);
-                        let optStyle = isCorrect ? 'color:#059669; font-weight:700; background:#d1fae5; padding:2px 6px; border-radius:4px;' : '';
-                        let optLetter = String.fromCharCode(65 + optIdx);
-                        html += `<li style="margin-bottom:0.3rem; ${optStyle}">${optLetter}) ${opt} ${isCorrect ? ' ✓ <strong>(Respuesta Correcta)</strong>' : ''}</li>`;
-                    });
-
-                    html += `</ul>
-                        <div style="font-size:0.82rem; color:#4b5563; font-style:italic; margin-top:0.4rem;"><strong>Explicación:</strong> ${q.explicacion}</div>
-                    </div>`;
-                });
-
-                html += `</div>`;
-            });
-
-            container.innerHTML = html;
         }
 
         // --- RENDERIZAR TARJETAS DE CAPÍTULOS (DOCENTE) ---
@@ -808,7 +740,6 @@
         }
 
         function saveTeacherConfiguration() {
-            // Guardar configuración inicial en Firebase
             db.ref('classes/' + classroomConfig.className).set({
                 config: classroomConfig,
                 createdAt: Date.now()
@@ -821,6 +752,67 @@
                     switchView('view-teacher-dashboard');
                 }
             });
+        }
+
+        // --- ABRIR VISTA DEL BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO ---
+        function openTeacherQuestionBank() {
+            if(!classroomConfig || !classroomConfig.chapterId) {
+                alert('No hay un capítulo activo seleccionado.');
+                return;
+            }
+
+            let capId = classroomConfig.chapterId;
+            let chapterData = bancoPreguntas[capId];
+            let container = document.getElementById('teacher-bank-detail-container');
+            
+            if(!chapterData) {
+                container.innerHTML = '<p>No se encontraron datos para este capítulo.</p>';
+                switchView('view-teacher-bank-detail');
+                return;
+            }
+
+            let html = `
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; border:1.5px solid var(--border-soft);">
+                    <h4 style="margin:0 0 0.5rem 0; color:#1e3a8a; font-family:Georgia, serif;">Capítulo ${capId} Asignado a la Clase: ${classroomConfig.className}</h4>
+                    <p style="margin:0 0 0.5rem 0; font-size:0.9rem;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
+                    <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><strong>Introducción:</strong> ${chapterData.introLab}</p>
+                </div>
+            `;
+
+            chapterData.videos.forEach((video, vIdx) => {
+                html += `
+                    <div style="background:#fff; border:1.5px solid var(--border-strong); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">
+                        <h4 style="margin:0 0 0.3rem 0; color:#1e3a8a; font-family:Georgia, serif;">${video.titulo}</h4>
+                        <p style="margin:0 0 0.8rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${video.tema}</p>
+                        <p style="margin:0 0 1rem 0; font-size:0.88rem; background:#f1f5f9; padding:0.6rem; border-radius:6px;"><strong>Objetivo del Video:</strong> ${video.objetivoVideo}</p>
+                `;
+
+                video.preguntas.forEach((q, qIdx) => {
+                    html += `
+                        <div style="margin-top:1rem; padding:1rem; background:#fffdf5; border:1px solid #fde047; border-radius:8px;">
+                            <div style="font-weight:700; font-size:0.92rem; margin-bottom:0.6rem;">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
+                            <ul style="margin:0 0 0.6rem 0; padding-left:1.2rem; font-size:0.9rem;">
+                    `;
+
+                    q.opciones.forEach((opt, optIdx) => {
+                        let isCorrect = (optIdx === q.correcta);
+                        let optStyle = isCorrect ? 'color:#059669; font-weight:700; background:#d1fae5; padding:3px 8px; border-radius:4px;' : '';
+                        let optLetter = String.fromCharCode(65 + optIdx);
+                        html += `<li style="margin-bottom:0.3rem; ${optStyle}">${optLetter}) ${opt} ${isCorrect ? ' ✓ <strong>(Respuesta Correcta)</strong>' : ''}</li>`;
+                    });
+
+                    html += `
+                            </ul>
+                            <div style="font-size:0.85rem; color:#4b5563; font-style:italic; margin-top:0.5rem; background:#fff; padding:0.5rem; border-radius:6px; border:1px solid var(--border-soft);"><strong>Explicación:</strong> ${q.explicacion}</div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+            switchView('view-teacher-bank-detail');
         }
 
         // --- ESCUCHA DE DATOS EN TIEMPO REAL (FIREBASE) ---
@@ -857,7 +849,6 @@
                 studentsList.push(studentsObj[sKey]);
             }
 
-            // Ordenar por nota final de mayor a menor
             studentsList.sort((a, b) => b.score - a.score);
 
             if(studentsList.length === 0) {
@@ -887,7 +878,6 @@
                 return;
             }
 
-            // Análisis de preguntas más acertadas / erradas
             let questionStats = {};
             studentsList.forEach(st => {
                 if(st.answersDetail) {
@@ -958,7 +948,6 @@
                 return;
             }
 
-            // Verificar clase en Firebase
             db.ref('classes/' + classname).once('value').then((snapshot) => {
                 if(!snapshot.exists()) {
                     alert('La clase ingresada no existe o no ha sido creada por el docente.');
@@ -991,7 +980,6 @@
             let chapterId = currentStudent.chapterId;
             let chapterData = bancoPreguntas[chapterId];
 
-            // Banner del capítulo
             document.getElementById('workspace-chapter-banner').innerHTML = `
                 <div class="chapter-header-box">
                     <div class="chapter-header-icon">${chapterId}</div>
@@ -1065,7 +1053,6 @@
         }
 
         function proceedToPageEvaluation() {
-            // Validar respuestas del estudiante antes de pasar a la evaluación de la página
             let unanswered = 0;
             activeQuestionsRendered.forEach(qObj => {
                 let selected = document.querySelector(`input[name="${qObj.id}"]:checked`);
@@ -1077,7 +1064,6 @@
                 return;
             }
 
-            // Calcular resultados provisionales
             let correctCount = 0;
             let errorCount = 0;
             let answersDetail = [];
@@ -1127,7 +1113,6 @@
                 return;
             }
 
-            // Guardar evaluación de la página en Firebase
             const evalPayload = {
                 studentName: currentStudent.name,
                 studentGroup: currentStudent.group,
@@ -1138,7 +1123,6 @@
 
             db.ref('classes/' + currentStudent.classname + '/pageEvaluations').push(evalPayload);
 
-            // Guardar calificación del alumno en Firebase
             db.ref('classes/' + currentStudent.classname + '/students/' + currentStudent.code).set(temporaryStudentScoreData, (error) => {
                 if(error) {
                     alert('Error al guardar su calificación.');
