@@ -433,6 +433,11 @@
         <div id="view-teacher-dashboard" class="view">
             <div class="alert-banner-docente" id="docente-info-banner"></div>
             
+            <!-- BOTÓN AÑADIDO PARA LA DOCENTE: VER BANCO DE PREGUNTAS Y RESPUESTAS -->
+            <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
+                <button class="btn-secondary" onclick="switchView('view-teacher-question-bank')" style="background: #1e3a8a; color: #fff; border: none; padding: 0.7rem 1.2rem; font-weight: 700;">📚 Ver Banco de Preguntas y Respuestas</button>
+            </div>
+
             <div class="teacher-stats-grid">
                 <div class="stat-card success">
                     <div class="stat-card-title">⭐ Pregunta más acertada por el aula</div>
@@ -484,6 +489,28 @@
             </div>
 
             <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-top: 2rem;">Cerrar Sesión Docente</button>
+        </div>
+
+        <!-- 4.1 INTERFAZ DE CONSULTA DE PREGUNTAS Y RESPUESTAS PARA LA DOCENTE -->
+        <div id="view-teacher-question-bank" class="view">
+            <div class="form-card" style="max-width: 950px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0; color: #1e3a8a;">Consulta de Preguntas, Alternativas y Respuestas</h3>
+                    <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')">← Volver al Panel de Notas</button>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Seleccione un capítulo para verificar el contenido teórico, las alternativas y cuál es la respuesta correcta marcada para orientar a sus alumnos sin salir de la plataforma.</p>
+                
+                <div class="form-field" style="margin-bottom: 1.5rem;">
+                    <label>Seleccionar Capítulo a Consultar:</label>
+                    <select id="teacher-bank-chapter-select" onchange="renderTeacherQuestionBank()" style="padding: 0.8rem; border-radius: 8px; border: 1.5px solid var(--border-strong);">
+                        <!-- Opciones cargadas dinámicamente -->
+                    </select>
+                </div>
+
+                <div id="teacher-bank-content-container"></div>
+
+                <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')" style="margin-top: 2rem;">← Volver al Panel de Notas</button>
+            </div>
         </div>
 
         <!-- 5. ACCESO DEL ESTUDIANTE -->
@@ -627,297 +654,298 @@
         let selectedChapterId = 1;
         let cachedStudentsData = {};
         let activeQuestionsRendered = [];
-        let temporaryStudentScoreData = null; // Almacena temporalmente los resultados antes de evaluar la página
+        let temporaryStudentScoreData = null;
 
         window.onload = function() {
             renderChapterSelectionCards();
+            initTeacherBankSelector();
         };
 
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            const target = document.getElementById(viewId);
-            if (target) target.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0);
+            if(viewId === 'view-teacher-question-bank') {
+                renderTeacherQuestionBank();
+            }
         }
 
+        // --- FUNCIONES PARA EL BANCO DE PREGUNTAS DE LA DOCENTE ---
+        function initTeacherBankSelector() {
+            const select = document.getElementById('teacher-bank-chapter-select');
+            if(!select || typeof bancoPreguntas === 'undefined') return;
+            select.innerHTML = '';
+            for(let capId in bancoPreguntas) {
+                let opt = document.createElement('option');
+                opt.value = capId;
+                opt.textContent = `Capítulo ${capId}: ${bancoPreguntas[capId].objGeneral.substring(0, 70)}...`;
+                select.appendChild(opt);
+            }
+        }
+
+        function renderTeacherQuestionBank() {
+            const select = document.getElementById('teacher-bank-chapter-select');
+            const container = document.getElementById('teacher-bank-content-container');
+            if(!select || !container || typeof bancoPreguntas === 'undefined') return;
+
+            let capId = select.value;
+            let chapterData = bancoPreguntas[capId];
+            if(!chapterData) {
+                container.innerHTML = '<p>No hay datos para este capítulo.</p>';
+                return;
+            }
+
+            let html = `<div style="background:#f8fafc; padding:1rem; border-radius:10px; margin-bottom:1.5rem; border:1px solid var(--border-soft);">
+                <strong>Objetivo General:</strong> ${chapterData.objGeneral}<br>
+                <strong>Introducción:</strong> ${chapterData.introLab}
+            </div>`;
+
+            chapterData.videos.forEach(video => {
+                html += `<div style="background:#fff; border:1.5px solid var(--border-strong); border-radius:12px; padding:1.2rem; margin-bottom:1.2rem;">
+                    <h4 style="margin:0 0 0.3rem 0; color:#1e3a8a; font-family:Georgia, serif;">${video.titulo}</h4>
+                    <p style="margin:0 0 0.8rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${video.tema}</p>
+                    <p style="margin:0 0 1rem 0; font-size:0.88rem; background:#f1f5f9; padding:0.6rem; border-radius:6px;"><strong>Objetivo del Video:</strong> ${video.objetivoVideo}</p>`;
+                
+                video.preguntas.forEach((q, qIdx) => {
+                    html += `<div style="margin-top:1rem; padding:0.8rem; background:#fffdf5; border:1px solid #fde047; border-radius:8px;">
+                        <div style="font-weight:700; font-size:0.9rem; margin-bottom:0.5rem;">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
+                        <ul style="margin:0 0 0.5rem 0; padding-left:1.2rem; font-size:0.88rem;">`;
+                    
+                    q.opciones.forEach((opt, optIdx) => {
+                        let isCorrect = (optIdx === q.correcta);
+                        let optStyle = isCorrect ? 'color:#059669; font-weight:700; background:#d1fae5; padding:2px 6px; border-radius:4px;' : '';
+                        let optLetter = String.fromCharCode(65 + optIdx);
+                        html += `<li style="margin-bottom:0.3rem; ${optStyle}">${optLetter}) ${opt} ${isCorrect ? ' ✓ <strong>(Respuesta Correcta)</strong>' : ''}</li>`;
+                    });
+
+                    html += `</ul>
+                        <div style="font-size:0.82rem; color:#4b5563; font-style:italic; margin-top:0.4rem;"><strong>Explicación:</strong> ${q.explicacion}</div>
+                    </div>`;
+                });
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // --- RENDERIZAR TARJETAS DE CAPÍTULOS (DOCENTE) ---
         function renderChapterSelectionCards() {
             const container = document.getElementById('chapters-cards-container');
-            if (!container) return;
+            if(!container || typeof bancoPreguntas === 'undefined') return;
             container.innerHTML = '';
 
-            const catalog = (typeof capitulosCatalog !== 'undefined') ? capitulosCatalog : [];
-            const banco = (typeof bancoPreguntas !== 'undefined') ? bancoPreguntas : {};
+            for(let capId in bancoPreguntas) {
+                let data = bancoPreguntas[capId];
+                let card = document.createElement('div');
+                card.className = `chapter-select-card ${capId == selectedChapterId ? 'selected' : ''}`;
+                card.onclick = () => {
+                    selectedChapterId = capId;
+                    document.querySelectorAll('.chapter-select-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                };
 
-            if (catalog.length === 0 && Object.keys(banco).length === 0) {
-                container.innerHTML = `<div style="color:red; padding:1rem;">Error: No se detectaron datos en videos.js ni pregunta.js.</div>`;
-                return;
-            }
-
-            catalog.forEach(cat => {
-                const cId = cat.id;
-                const isSelected = (cId === selectedChapterId);
-                const backgroundHex = cat.color || '#1e3a8a';
-
-                container.innerHTML += `
-                    <div class="chapter-select-card ${isSelected ? 'selected' : ''}" onclick="selectChapterForTeacher(${cId})">
-                        <div class="chapter-icon-badge" style="background:${backgroundHex};">
-                            <span>${cat.icon || 'C' + cId}</span>
-                        </div>
-                        <div class="chapter-card-info">
-                            <div class="chapter-card-title">${cat.title}</div>
-                            <div class="chapter-card-desc">${cat.introLab ? cat.introLab.substring(0, 95) + '...' : ''}</div>
-                        </div>
-                        <div class="chapter-arrow">›</div>
+                card.innerHTML = `
+                    <div class="chapter-icon-badge" style="background:${capId == 1 ? '#059669' : '#1e3a8a'}">${capId}</div>
+                    <div class="chapter-card-info">
+                        <div class="chapter-card-title">Capítulo ${capId}</div>
+                        <div class="chapter-card-desc">${data.objGeneral}</div>
                     </div>
+                    <div class="chapter-arrow">➔</div>
                 `;
-            });
+                container.appendChild(card);
+            }
         }
 
-        function selectChapterForTeacher(id) {
-            selectedChapterId = id;
-            renderChapterSelectionCards();
-        }
-
+        // --- CONFIGURACIÓN DE VIDEOS PARA EL DOCENTE ---
         function goToTeacherConfig() {
-            const tTeacher = document.getElementById('t-teachername').value.trim();
-            const tName = document.getElementById('t-classname').value.trim();
-            const tPass = document.getElementById('t-pass').value.trim();
+            const teacherName = document.getElementById('t-teachername').value.trim();
+            const className = document.getElementById('t-classname').value.trim();
+            const pass = document.getElementById('t-pass').value.trim();
 
-            if (!tTeacher || !tName || !tPass) {
-                alert("Por favor complete todos los campos obligatorios del docente y de la clase.");
+            if(!teacherName || !className || !pass) {
+                alert('Por favor, complete todos los campos obligatorios del registro.');
                 return;
             }
 
-            classroomConfig = { teacher: tTeacher, name: tName, pass: tPass, chapterId: selectedChapterId };
-            
-            const catalog = (typeof capitulosCatalog !== 'undefined') ? capitulosCatalog : [];
-            const chapterMeta = catalog.find(c => c.id == selectedChapterId) || { title: 'Capítulo ' + selectedChapterId };
-            const banco = (typeof bancoPreguntas !== 'undefined') ? bancoPreguntas : {};
-            const chapterData = banco[selectedChapterId] || {};
+            classroomConfig = {
+                teacherName,
+                className,
+                pass,
+                chapterId: selectedChapterId
+            };
 
+            // Header info
             document.getElementById('teacher-config-header-info').innerHTML = `
-                <h3 style="margin-top:0; font-family:Georgia, serif; color:var(--text-main);">${chapterMeta.title} - Configuración de Preguntas</h3>
-                <p style="font-size:0.9rem; color:var(--text-muted);">A continuación puede revisar las preguntas sugeridas de cada video o proponer hasta dos preguntas nuevas para reemplazar o complementar el cuestionario.</p>
+                <h3 style="color:#1e3a8a;">Configuración de Preguntas - Capítulo ${selectedChapterId}</h3>
+                <p style="font-size:0.88rem; color:var(--text-muted);">Clase: <strong>${className}</strong> | Docente: <strong>${teacherName}</strong></p>
             `;
 
-            const container = document.getElementById('teacher-config-videos-container');
-            container.innerHTML = '';
+            let vidContainer = document.getElementById('teacher-config-videos-container');
+            vidContainer.innerHTML = '';
 
-            const listaVideos = chapterData.videos || [];
-            listaVideos.forEach((vItem, vIdx) => {
-                let suggestedHtml = '';
-                if (vItem.preguntas && vItem.preguntas.length > 0) {
-                    vItem.preguntas.forEach((p, pIdx) => {
-                        suggestedHtml += `
-                            <div class="teacher-suggested-q">
-                                <strong>Pregunta sugerida ${pIdx + 1}:</strong> ${p.pregunta}<br>
-                                <span style="color:#059669; font-weight:600;">Respuesta Correcta:</span> ${p.opciones[p.correcta]}<br>
-                                <span style="color:var(--text-muted); font-size:0.82rem;">Explicación: ${p.explicacion || 'No especificada.'}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    suggestedHtml = `<p style="color:var(--text-muted); font-size:0.85rem;">No hay preguntas sugeridas registradas para este video.</p>`;
-                }
-
-                container.innerHTML += `
-                    <div class="teacher-config-video-card">
-                        <div style="font-weight:800; font-size:1.05rem; color:var(--text-main); margin-bottom:0.2rem;">${vItem.titulo}</div>
-                        <div style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">Tema: ${vItem.tema}</div>
-                        
-                        <div style="font-size:0.82rem; font-weight:700; text-transform:uppercase; color:var(--accent-teacher); margin-bottom:0.5rem;">Preguntas Base Sugeridas:</div>
-                        ${suggestedHtml}
-
-                        <div class="custom-q-builder">
-                            <div style="font-size:0.85rem; font-weight:800; color:#065f46; margin-bottom:0.5rem;">✏️ Propuesta de Pregunta Personalizada (Opcional)</div>
-                            <div class="form-field" style="margin-bottom:0.6rem;">
-                                <label style="font-size:0.75rem;">Enunciado de la Pregunta Nueva:</label>
-                                <input type="text" id="t_q_text_${vIdx}" placeholder="Ej: ¿Qué factor influye directamente en...">
-                            </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.6rem;">
-                                <input type="text" id="t_q_${vIdx}_opt0" placeholder="Alternativa A" style="font-size:0.85rem; padding:0.5rem;">
-                                <input type="text" id="t_q_${vIdx}_opt1" placeholder="Alternativa B" style="font-size:0.85rem; padding:0.5rem;">
-                                <input type="text" id="t_q_${vIdx}_opt2" placeholder="Alternativa C" style="font-size:0.85rem; padding:0.5rem;">
-                                <input type="text" id="t_q_${vIdx}_opt3" placeholder="Alternativa D" style="font-size:0.85rem; padding:0.5rem;">
-                            </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
-                                <div class="form-field">
-                                    <label style="font-size:0.75rem;">Índice de Respuesta Correcta (0 al 3):</label>
-                                    <select id="t_q_corr_${vIdx}" style="padding:0.5rem; font-size:0.85rem;">
-                                        <option value="0">Alternativa A</option>
-                                        <option value="1">Alternativa B</option>
-                                        <option value="2">Alternativa C</option>
-                                        <option value="3">Alternativa D</option>
-                                    </select>
-                                </div>
-                                <div class="form-field">
-                                    <label style="font-size:0.75rem;">Explicación breve:</label>
-                                    <input type="text" id="t_q_exp_${vIdx}" placeholder="Por qué es correcta..." style="font-size:0.85rem; padding:0.5rem;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            let chapterData = bancoPreguntas[selectedChapterId];
+            chapterData.videos.forEach((vid, vIdx) => {
+                let vidBox = document.createElement('div');
+                vidBox.className = 'teacher-config-video-card';
+                vidBox.innerHTML = `
+                    <h4 style="margin:0 0 0.3rem 0; color:var(--text-main); font-family:Georgia, serif;">${vid.titulo}</h4>
+                    <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${vid.tema}</p>
+                    <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; color:#1e3a8a;">Preguntas oficiales del banco asociadas a este video:</div>
                 `;
+
+                vid.preguntas.forEach((q, qIdx) => {
+                    let qDiv = document.createElement('div');
+                    qDiv.className = 'teacher-suggested-q';
+                    qDiv.innerHTML = `<strong>P${qIdx+1}:</strong> ${q.pregunta}<br><span style="color:#059669; font-size:0.82rem;">Respuesta correcta: Opción ${String.fromCharCode(65 + q.correcta)}</span>`;
+                    vidBox.appendChild(qDiv);
+                });
+
+                vidContainer.appendChild(vidBox);
             });
 
             switchView('view-teacher-config');
         }
 
         function saveTeacherConfiguration() {
-            const banco = (typeof bancoPreguntas !== 'undefined') ? bancoPreguntas : {};
-            const chapterData = JSON.parse(JSON.stringify(banco[classroomConfig.chapterId] || { videos: [] }));
-
-            chapterData.videos.forEach((vItem, vIdx) => {
-                const qText = document.getElementById(`t_q_text_${vIdx}`).value.trim();
-                if (qText) {
-                    const opt0 = document.getElementById(`t_q_${vIdx}_opt0`).value.trim();
-                    const opt1 = document.getElementById(`t_q_${vIdx}_opt1`).value.trim();
-                    const opt2 = document.getElementById(`t_q_${vIdx}_opt2`).value.trim();
-                    const opt3 = document.getElementById(`t_q_${vIdx}_opt3`).value.trim();
-                    const corr = parseInt(document.getElementById(`t_q_corr_${vIdx}`).value);
-                    const exp = document.getElementById(`t_q_exp_${vIdx}`).value.trim();
-
-                    if (opt0 && opt1) {
-                        const customQ = {
-                            pregunta: qText,
-                            opciones: [opt0, opt1, opt2 || "N/A", opt3 || "N/A"].filter(Boolean),
-                            correcta: corr,
-                            explicacion: exp || "Pregunta propuesta por el docente de la clase."
-                        };
-                        vItem.preguntas[0] = customQ;
-                    }
+            // Guardar configuración inicial en Firebase
+            db.ref('classes/' + classroomConfig.className).set({
+                config: classroomConfig,
+                createdAt: Date.now()
+            }, (error) => {
+                if(error) {
+                    alert('Error al conectar con la base de datos.');
+                } else {
+                    alert('¡Clase creada exitosamente!');
+                    listenToClassroomData();
+                    switchView('view-teacher-dashboard');
                 }
             });
-
-            const classPayload = {
-                teacher: classroomConfig.teacher,
-                pass: classroomConfig.pass,
-                chapterId: classroomConfig.chapterId,
-                customQuestions: chapterData.videos
-            };
-
-            db.ref('classes/' + classroomConfig.name).set(classPayload).then(() => {
-                initTeacherDashboard();
-            }).catch(err => {
-                alert("Error al guardar en Firebase: " + err.message);
-            });
         }
 
-        function initTeacherDashboard() {
-            switchView('view-teacher-dashboard');
-            const catalog = (typeof capitulosCatalog !== 'undefined') ? capitulosCatalog : [];
-            const currentCat = catalog.find(c => c.id == classroomConfig.chapterId) || { title: 'Capítulo ' + classroomConfig.chapterId };
+        // --- ESCUCHA DE DATOS EN TIEMPO REAL (FIREBASE) ---
+        function listenToClassroomData() {
+            if(!classroomConfig) return;
 
             document.getElementById('docente-info-banner').innerHTML = `
-                <strong>Aula Virtual:</strong> ${classroomConfig.name} | 
-                <strong>Contraseña:</strong> ${classroomConfig.pass} | 
-                <strong>Docente:</strong> ${classroomConfig.teacher} | 
-                <strong>Capítulo Asignado:</strong> ${currentCat.title}
+                📌 <strong>Clase Activa:</strong> ${classroomConfig.className} | 
+                👨‍🏫 <strong>Docente:</strong> ${classroomConfig.teacherName} | 
+                📖 <strong>Capítulo Asignado:</strong> ${classroomConfig.chapterId}
             `;
 
-            db.ref('students/' + classroomConfig.name).on('value', snapshot => {
+            // Escuchar alumnos
+            db.ref('classes/' + classroomConfig.className + '/students').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 cachedStudentsData = data;
-                renderTeacherTable(data);
-                computeGlobalStats(data);
-                renderTeacherComments(data);
+                renderTeacherDashboardTable(data);
+                calculateTeacherStats(data);
+            });
+
+            // Escuchar evaluaciones y comentarios de la página
+            db.ref('classes/' + classroomConfig.className + '/pageEvaluations').on('value', (snapshot) => {
+                const evalData = snapshot.val() || {};
+                renderPageEvaluationsStats(evalData);
             });
         }
 
-        function renderTeacherTable(studentsObj) {
+        function renderTeacherDashboardTable(studentsObj) {
             const tbody = document.getElementById('students-table-body');
             tbody.innerHTML = '';
 
-            const list = Object.keys(studentsObj).map(key => ({ key, ...studentsObj[key] }));
-            list.sort((a, b) => (b.score || 0) - (a.score || 0));
+            let studentsList = [];
+            for(let sKey in studentsObj) {
+                studentsList.push(studentsObj[sKey]);
+            }
 
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Aún no hay alumnos registrados en esta aula.</td></tr>`;
+            // Ordenar por nota final de mayor a menor
+            studentsList.sort((a, b) => b.score - a.score);
+
+            if(studentsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Aún no hay alumnos registrados en esta clase.</td></tr>`;
                 return;
             }
 
-            list.forEach((st, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>#${idx + 1}</strong></td>
-                        <td>${st.name}</td>
-                        <td>${st.code}</td>
-                        <td>Grupo ${st.group}</td>
-                        <td><strong>${st.score !== undefined ? st.score : '-'}/20</strong></td>
-                        <td><span style="color:#059669; font-weight:700;">${st.correctCount || 0} Aciertos</span> / <span style="color:#ef4444; font-weight:700;">${st.incorrectCount || 0} Errores</span></td>
-                    </tr>
+            studentsList.forEach((st, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${idx + 1}</strong></td>
+                    <td>${st.name}</td>
+                    <td>${st.code}</td>
+                    <td>Grupo ${st.group}</td>
+                    <td><strong style="color:${st.score >= 14 ? '#059669' : (st.score >= 10 ? '#d97706' : '#ef4444')}">${st.score.toFixed(1)} / 20</strong></td>
+                    <td>🟢 ${st.correctCount} aciertos / 🔴 ${st.errorCount} errores</td>
                 `;
+                tbody.appendChild(tr);
             });
         }
 
-        function computeGlobalStats(studentsObj) {
-            const qStats = {};
-            let sumQ1 = 0, sumQ2 = 0, sumQ3 = 0, countEval = 0;
+        function calculateTeacherStats(studentsObj) {
+            let studentsList = Object.values(studentsObj);
+            if(studentsList.length === 0) {
+                document.getElementById('stat-most-correct').textContent = "Sin datos suficientes";
+                document.getElementById('stat-least-correct').textContent = "Sin datos suficientes";
+                return;
+            }
 
-            Object.values(studentsObj).forEach(st => {
-                if (st.evalPage) {
-                    sumQ1 += parseInt(st.evalPage.q1 || 3);
-                    sumQ2 += parseInt(st.evalPage.q2 || 3);
-                    sumQ3 += parseInt(st.evalPage.q3 || 3);
-                    countEval++;
-                }
-                if (st.details && Array.isArray(st.details)) {
-                    st.details.forEach((d, qIndex) => {
-                        if (!qStats[qIndex]) qStats[qIndex] = { correct: 0, total: 0, text: d.questionText || `Pregunta ${qIndex + 1}` };
-                        qStats[qIndex].total++;
-                        if (d.isCorrect) qStats[qIndex].correct++;
+            // Análisis de preguntas más acertadas / erradas
+            let questionStats = {};
+            studentsList.forEach(st => {
+                if(st.answersDetail) {
+                    st.answersDetail.forEach(ans => {
+                        let qKey = `P: ${ans.question}`;
+                        if(!questionStats[qKey]) questionStats[qKey] = { correct: 0, total: 0 };
+                        questionStats[qKey].total++;
+                        if(ans.isCorrect) questionStats[qKey].correct++;
                     });
                 }
             });
 
-            let bestQ = null;
-            let worstQ = null;
-            let bestRatio = -1;
-            let worstRatio = 2;
+            let bestQ = "N/A", worstQ = "N/A";
+            let maxRatio = -1, minRatio = 2;
 
-            Object.values(qStats).forEach(q => {
-                const ratio = q.total > 0 ? (q.correct / q.total) : 0;
-                if (ratio > bestRatio) { bestRatio = ratio; bestQ = q; }
-                if (ratio < worstRatio) { worstRatio = ratio; worstQ = q; }
-            });
-
-            document.getElementById('stat-most-correct').innerText = bestQ ? `${bestQ.text} (${Math.round(bestRatio * 100)}% aciertos)` : 'Sin datos';
-            document.getElementById('stat-least-correct').innerText = worstQ ? `${worstQ.text} (${Math.round(worstRatio * 100)}% aciertos)` : 'Sin datos';
-
-            if (countEval > 0) {
-                document.getElementById('stat-page-ratings').innerHTML = `
-                    Utilidad Interfaz: <strong>${(sumQ1/countEval).toFixed(1)}/5</strong><br>
-                    Calidad Videos: <strong>${(sumQ2/countEval).toFixed(1)}/5</strong><br>
-                    Cuestionarios: <strong>${(sumQ3/countEval).toFixed(1)}/5</strong> (${countEval} evaluaciones)
-                `;
-            } else {
-                document.getElementById('stat-page-ratings').innerText = 'Sin evaluaciones de página registradas.';
+            for(let q in questionStats) {
+                let ratio = questionStats[q].correct / questionStats[q].total;
+                if(ratio > maxRatio) { maxRatio = ratio; bestQ = q; }
+                if(ratio < minRatio) { minRatio = ratio; worstQ = q; }
             }
+
+            document.getElementById('stat-most-correct').textContent = maxRatio >= 0 ? `${bestQ} (${(maxRatio*100).toFixed(0)}% de aciertos)` : "N/A";
+            document.getElementById('stat-least-correct').textContent = minRatio <= 1 ? `${worstQ} (${((1-minRatio)*100).toFixed(0)}% de errores)` : "N/A";
         }
 
-        function renderTeacherComments(studentsObj) {
-            const container = document.getElementById('teacher-comments-container');
-            container.innerHTML = '';
-            let count = 0;
+        function renderPageEvaluationsStats(evalObj) {
+            let evals = Object.values(evalObj);
+            const commentsContainer = document.getElementById('teacher-comments-container');
+            commentsContainer.innerHTML = '';
 
-            Object.values(studentsObj).forEach(st => {
-                if (st.evalPage && st.evalPage.comment) {
-                    count++;
-                    container.innerHTML += `
-                        <div class="comment-item">
-                            <strong>${st.name} (Código: ${st.code}):</strong> "${st.evalPage.comment}"
-                        </div>
-                    `;
-                }
+            if(evals.length === 0) {
+                document.getElementById('stat-page-ratings').textContent = "Sin calificaciones aún";
+                document.getElementById('stat-comments-count').textContent = "0 comentarios registrados";
+                commentsContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aún no hay comentarios registrados.</p>`;
+                return;
+            }
+
+            let sumQ1 = 0, sumQ2 = 0, sumQ3 = 0;
+            evals.forEach(ev => {
+                sumQ1 += Number(ev.q1);
+                sumQ2 += Number(ev.q2);
+                sumQ3 += Number(ev.q3);
+
+                let cDiv = document.createElement('div');
+                cDiv.className = 'comment-item';
+                cDiv.innerHTML = `<strong>${ev.studentName}</strong> (Grupo ${ev.studentGroup}):<br>"${ev.comment}"`;
+                commentsContainer.appendChild(cDiv);
             });
 
-            document.getElementById('stat-comments-count').innerText = `${count} comentarios registrados`;
-            if (count === 0) {
-                container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aún no hay comentarios registrados.</p>`;
-            }
+            let avgQ1 = (sumQ1 / evals.length).toFixed(1);
+            let avgQ2 = (sumQ2 / evals.length).toFixed(1);
+            let avgQ3 = (sumQ3 / evals.length).toFixed(1);
+
+            document.getElementById('stat-page-ratings').textContent = `Interfaz: ${avgQ1}/5 | Videos: ${avgQ2}/5 | Cuestionario: ${avgQ3}/5`;
+            document.getElementById('stat-comments-count').textContent = `${evals.length} comentarios registrados`;
         }
 
-        // Acceso del Estudiante
+        // --- ENTORNO DEL ESTUDIANTE ---
         function studentEnter() {
             const name = document.getElementById('s-name').value.trim();
             const code = document.getElementById('s-code').value.trim();
@@ -925,249 +953,229 @@
             const classname = document.getElementById('s-classname').value.trim();
             const pass = document.getElementById('s-pass').value.trim();
 
-            if (!name || !code || !classname || !pass) {
-                alert("Por favor complete todos los campos obligatorios.");
+            if(!name || !code || !classname || !pass) {
+                alert('Por favor, complete todos los campos de acceso.');
                 return;
             }
 
-            db.ref('classes/' + classname).once('value').then(snapshot => {
-                const cls = snapshot.val();
-                if (!cls) {
-                    alert("La clase especificada no existe.");
-                    return;
-                }
-                if (cls.pass !== pass) {
-                    alert("Contraseña incorrecta para esta clase.");
+            // Verificar clase en Firebase
+            db.ref('classes/' + classname).once('value').then((snapshot) => {
+                if(!snapshot.exists()) {
+                    alert('La clase ingresada no existe o no ha sido creada por el docente.');
                     return;
                 }
 
-                classroomConfig = { name: classname, ...cls };
-                currentStudent = { name, code, group };
-                initStudentWorkspace();
+                const classData = snapshot.val();
+                if(classData.config.pass !== pass) {
+                    alert('Contraseña incorrecta.');
+                    return;
+                }
+
+                currentStudent = {
+                    name,
+                    code,
+                    group,
+                    classname,
+                    chapterId: classData.config.chapterId
+                };
+
+                classroomConfig = classData.config;
+
+                document.getElementById('student-session-info').textContent = `${name} | Código: ${code} | Grupo ${group}`;
+                buildStudentWorkspace();
+                switchView('view-student-workspace');
             });
         }
 
-        function initStudentWorkspace() {
-            switchView('view-student-workspace');
-            document.getElementById('student-session-info').innerText = `${currentStudent.name} (Código: ${currentStudent.code} | Grupo ${currentStudent.group})`;
+        function buildStudentWorkspace() {
+            let chapterId = currentStudent.chapterId;
+            let chapterData = bancoPreguntas[chapterId];
 
-            const catalog = (typeof capitulosCatalog !== 'undefined') ? capitulosCatalog : [];
-            const chapterMeta = catalog.find(c => c.id == classroomConfig.chapterId) || { title: 'Capítulo ' + classroomConfig.chapterId, folder: 'CAPITULO ' + classroomConfig.chapterId, icon: '∰' };
-            const banco = (typeof bancoPreguntas !== 'undefined') ? bancoPreguntas : {};
-            const chapterQuestionsData = banco[classroomConfig.chapterId] || {};
-
-            const introText = chapterMeta.introLab || chapterQuestionsData.introLab || '';
-            const objText = chapterMeta.objGeneral || chapterQuestionsData.objGeneral || '';
-
+            // Banner del capítulo
             document.getElementById('workspace-chapter-banner').innerHTML = `
                 <div class="chapter-header-box">
-                    <div class="chapter-header-icon" style="background:${chapterMeta.color || '#1e3a8a'};">${chapterMeta.icon || 'C'}</div>
-                    <div style="flex: 1;">
-                        <h3>${chapterMeta.title}</h3>
-                        <div class="lab-info-card">
-                            <strong>Fundamento de Laboratorio:</strong> ${introText}
-                        </div>
-                        <div style="margin-top: 0.8rem; font-size: 0.9rem; color: var(--text-main); font-weight: 600;">
-                            <em>Objetivo General: ${objText}</em>
-                        </div>
+                    <div class="chapter-header-icon">${chapterId}</div>
+                    <div>
+                        <h3 style="margin:0 0 0.3rem 0; font-family:Georgia, serif; color:var(--text-main);">Capítulo ${chapterId}: Demostraciones de Física</h3>
+                        <p style="margin:0 0 0.5rem 0; font-weight:600; font-size:0.9rem; color:#059669;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
+                        <div class="lab-info-card"><strong>Introducción para el laboratorio:</strong> ${chapterData.introLab}</div>
                     </div>
                 </div>
             `;
 
-            renderStudentVideosAndQuizzes(chapterMeta, classroomConfig.customQuestions || chapterQuestionsData.videos || []);
-        }
-
-        function renderStudentVideosAndQuizzes(chapterMeta, listaVideos) {
-            const container = document.getElementById('workspace-videos-container');
-            container.innerHTML = '';
+            let vidContainer = document.getElementById('workspace-videos-container');
+            vidContainer.innerHTML = '';
             activeQuestionsRendered = [];
 
-            if (listaVideos.length === 0) {
-                container.innerHTML = `<div class="video-card" style="text-align:center; color:var(--text-muted);">No se encontraron videos disponibles para este capítulo.</div>`;
-                return;
-            }
+            chapterData.videos.forEach((vid, vIdx) => {
+                let videoObjUrl = (typeof videoMapping !== 'undefined' && videoMapping[vid.id]) ? videoMapping[vid.id] : "";
 
-            const folderName = chapterMeta.folder || `CAPITULO ${chapterMeta.id}`;
+                let vCard = document.createElement('div');
+                vCard.className = 'video-card';
+                vCard.innerHTML = `
+                    <div class="video-title-bar">${vid.titulo}</div>
+                    <div class="video-theme-bar"><strong>Tema:</strong> ${vid.tema}</div>
+                    <div class="video-responsive">
+                        <video controls preload="metadata" ${videoObjUrl ? '' : 'poster=""'}>
+                            <source src="${videoObjUrl}" type="video/mp4">
+                            Su navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <div class="video-objective-box"><strong>Objetivo del Video:</strong> ${vid.objetivoVideo}</div>
+                    
+                    <div class="quiz-container-box">
+                        <div class="quiz-title">Cuestionario de Evaluación del Video</div>
+                        <div id="quiz-items-${vIdx}"></div>
+                    </div>
+                `;
 
-            listaVideos.forEach((videoItem, vIndex) => {
-                const preguntas = videoItem.preguntas || [];
+                let qListContainer = vCard.querySelector(`#quiz-items-${vIdx}`);
+                vid.preguntas.forEach((q, qIdx) => {
+                    let globalQId = `v${vIdx}_q${qIdx}`;
+                    activeQuestionsRendered.push({
+                        id: globalQId,
+                        questionText: q.pregunta,
+                        correctIndex: q.correcta,
+                        explanation: q.explicacion,
+                        videoId: vid.id
+                    });
 
-                let quizHtml = '';
-                if (preguntas && preguntas.length > 0) {
-                    let questionsList = '';
-                    preguntas.forEach((p, pIndex) => {
-                        const globalQId = `v${vIndex}_q${pIndex}`;
-                        activeQuestionsRendered.push({
-                            id: globalQId,
-                            enunciado: p.pregunta,
-                            respuestaCorrecta: p.correcta,
-                            opciones: p.opciones,
-                            explicacion: p.explicacion
-                        });
-
-                        let optionsHtml = '';
-                        p.opciones.forEach((optText, oIndex) => {
-                            optionsHtml += `
-                                <label class="quiz-option-label">
-                                    <input type="radio" name="${globalQId}" value="${oIndex}">
-                                    <span>${optText}</span>
-                                </label>
-                            `;
-                        });
-
-                        questionsList += `
-                            <div class="quiz-question-item">
-                                <div class="quiz-question-title">Pregunta ${pIndex + 1}: ${p.pregunta}</div>
-                                <div style="margin-left: 0.2rem;">${optionsHtml}</div>
-                            </div>
+                    let qItem = document.createElement('div');
+                    qItem.className = 'quiz-question-item';
+                    
+                    let optsHtml = '';
+                    q.opciones.forEach((optText, optIdx) => {
+                        optsHtml += `
+                            <label class="quiz-option-label">
+                                <input type="radio" name="${globalQId}" value="${optIdx}">
+                                <span><strong>${String.fromCharCode(65 + optIdx)})</strong> ${optText}</span>
+                            </label>
                         `;
                     });
 
-                    quizHtml = `
-                        <div class="quiz-container-box">
-                            <div class="quiz-title">Cuestionario de Evaluación (2 Preguntas)</div>
-                            ${questionsList}
-                        </div>
+                    qItem.innerHTML = `
+                        <div class="quiz-question-title">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
+                        ${optsHtml}
                     `;
-                }
+                    qListContainer.appendChild(qItem);
+                });
 
-                const videoTitle = videoItem.titulo;
-                const videoId = videoItem.id;
-
-                const pathConPrefijo = `${folderName}/Copia de ${videoTitle}.mp4`;
-                const pathDirecto = `${folderName}/${videoTitle}.mp4`;
-                const pathSoloId = `${folderName}/Copia de ${videoId}.mp4`;
-
-                container.innerHTML += `
-                    <div class="video-card">
-                        <div class="video-title-bar">${videoItem.titulo || ('Video ' + (vIndex + 1))}</div>
-                        <div class="video-theme-bar"><strong>Tema:</strong> ${videoItem.tema || ''}</div>
-                        
-                        <div class="video-responsive">
-                            <video controls preload="metadata">
-                                <source src="${pathConPrefijo}" type="video/mp4">
-                                <source src="${pathDirecto}" type="video/mp4">
-                                <source src="${pathSoloId}" type="video/mp4">
-                                Tu navegador no soporta la reproducción de este video.
-                            </video>
-                        </div>
-
-                        <div class="video-objective-box">
-                            <strong>Objetivo Didáctico:</strong> ${videoItem.objetivoVideo || ''}
-                        </div>
-
-                        ${quizHtml}
-                    </div>
-                `;
+                vidContainer.appendChild(vCard);
             });
         }
 
-        // Paso 1 del Alumno: Al hacer clic en Evaluar, procesamos respuestas y lo mandamos a la interfaz aparte de calificación de página
         function proceedToPageEvaluation() {
-            let correctCount = 0;
-            let incorrectCount = 0;
-            let details = [];
-
-            activeQuestionsRendered.forEach(q => {
-                const radios = document.getElementsByName(q.id);
-                let selectedVal = -1;
-                radios.forEach(r => {
-                    if (r.checked) selectedVal = parseInt(r.value);
-                });
-
-                const isCorrect = (selectedVal !== -1 && selectedVal === q.respuestaCorrecta);
-                if (isCorrect) correctCount++; else incorrectCount++;
-
-                details.push({
-                    questionText: q.enunciado,
-                    selectedOption: selectedVal,
-                    respuestaCorrectaIndex: q.respuestaCorrecta,
-                    opciones: q.opciones,
-                    isCorrect: isCorrect,
-                    explicacion: q.explicacion || "Respuesta correcta validada por el portal académico."
-                });
+            // Validar respuestas del estudiante antes de pasar a la evaluación de la página
+            let unanswered = 0;
+            activeQuestionsRendered.forEach(qObj => {
+                let selected = document.querySelector(`input[name="${qObj.id}"]:checked`);
+                if(!selected) unanswered++;
             });
 
-            const totalQ = activeQuestionsRendered.length || 1;
-            const finalScore = Math.round((correctCount / totalQ) * 20);
-
-            // Almacenamos temporalmente los datos del cuestionario del alumno
-            temporaryStudentScoreData = {
-                score: finalScore,
-                correctCount,
-                incorrectCount,
-                details
-            };
-
-            // Abrimos la interfaz aparte de evaluación de la página
-            switchView('view-page-evaluation');
-        }
-
-        // Paso 2 del Alumno: Validación del comentario y envío definitivo a Firebase y despliegue del Feedback
-        function submitEvaluationAndGetResults() {
-            const commentVal = document.getElementById('eval-comment').value.trim();
-            if (!commentVal) {
-                alert("Por favor, es requisito obligatorio escribir un comentario o sugerencia para mejorar la página antes de continuar.");
+            if(unanswered > 0) {
+                alert(`Tiene ${unanswered} pregunta(s) sin responder. Por favor complete todo el cuestionario antes de continuar.`);
                 return;
             }
 
-            const evalPage = {
-                q1: document.getElementById('eval-q1').value,
-                q2: document.getElementById('eval-q2').value,
-                q3: document.getElementById('eval-q3').value,
-                comment: commentVal
-            };
+            // Calcular resultados provisionales
+            let correctCount = 0;
+            let errorCount = 0;
+            let answersDetail = [];
 
-            const studentDataKey = currentStudent.code;
-            const payload = {
+            activeQuestionsRendered.forEach(qObj => {
+                let selected = document.querySelector(`input[name="${qObj.id}"]:checked`);
+                let selectedIdx = parseInt(selected.value);
+                let isCorrect = (selectedIdx === qObj.correctIndex);
+
+                if(isCorrect) correctCount++;
+                else errorCount++;
+
+                answersDetail.push({
+                    question: qObj.questionText,
+                    selectedIndex: selectedIdx,
+                    correctIndex: qObj.correctIndex,
+                    isCorrect: isCorrect,
+                    explanation: qObj.explanation
+                });
+            });
+
+            let totalQ = activeQuestionsRendered.length;
+            let finalScore = totalQ > 0 ? (correctCount / totalQ) * 20 : 0;
+
+            temporaryStudentScoreData = {
                 name: currentStudent.name,
                 code: currentStudent.code,
                 group: currentStudent.group,
-                score: temporaryStudentScoreData.score,
-                correctCount: temporaryStudentScoreData.correctCount,
-                incorrectCount: temporaryStudentScoreData.incorrectCount,
-                evalPage: evalPage,
-                details: temporaryStudentScoreData.details
+                score: finalScore,
+                correctCount,
+                errorCount,
+                answersDetail,
+                timestamp: Date.now()
             };
 
-            db.ref('students/' + classroomConfig.name + '/' + studentDataKey).set(payload).then(() => {
-                renderStudentFeedback(payload.score, payload.correctCount, payload.incorrectCount, payload.details);
-            }).catch(err => {
-                alert("Error al guardar en Firebase: " + err.message);
+            switchView('view-page-evaluation');
+        }
+
+        function submitEvaluationAndGetResults() {
+            const q1 = document.getElementById('eval-q1').value;
+            const q2 = document.getElementById('eval-q2').value;
+            const q3 = document.getElementById('eval-q3').value;
+            const comment = document.getElementById('eval-comment').value.trim();
+
+            if(!comment) {
+                alert('Por favor, deje su comentario o sugerencia antes de continuar.');
+                return;
+            }
+
+            // Guardar evaluación de la página en Firebase
+            const evalPayload = {
+                studentName: currentStudent.name,
+                studentGroup: currentStudent.group,
+                q1, q2, q3,
+                comment,
+                timestamp: Date.now()
+            };
+
+            db.ref('classes/' + currentStudent.classname + '/pageEvaluations').push(evalPayload);
+
+            // Guardar calificación del alumno en Firebase
+            db.ref('classes/' + currentStudent.classname + '/students/' + currentStudent.code).set(temporaryStudentScoreData, (error) => {
+                if(error) {
+                    alert('Error al guardar su calificación.');
+                } else {
+                    renderStudentFeedbackView(temporaryStudentScoreData);
+                    switchView('view-student-feedback');
+                }
             });
         }
 
-        function renderStudentFeedback(score, correct, incorrect, details) {
-            const catalog = (typeof capitulosCatalog !== 'undefined') ? capitulosCatalog : [];
-            const chapterMeta = catalog.find(c => c.id == classroomConfig.chapterId) || { title: 'Capítulo ' + classroomConfig.chapterId };
+        function renderStudentFeedbackView(data) {
+            let headerBox = document.getElementById('feedback-header-box');
+            let colorScore = data.score >= 14 ? '#059669' : (data.score >= 10 ? '#d97706' : '#ef4444');
 
-            document.getElementById('feedback-header-box').innerHTML = `
-                <h3 style="margin:0 0 0.5rem 0; font-family:Georgia, serif; color:#065f46;">Resultados y Retroalimentación</h3>
-                <div style="font-size:1.1rem; font-weight:700; color:var(--text-main);">${chapterMeta.title}</div>
-                <div style="font-size:2rem; font-weight:800; color:#059669; margin:0.5rem 0;">${score} / 20</div>
-                <div style="font-size:0.9rem; color:var(--text-muted);">Aciertos: <strong>${correct}</strong> | Errores: <strong>${incorrect}</strong></div>
+            headerBox.innerHTML = `
+                <h2 style="margin:0 0 0.5rem 0; color:${colorScore}; font-family:Georgia, serif;">¡Evaluación Completada, ${data.name}!</h2>
+                <p style="margin:0; font-size:1.1rem; font-weight:700;">Calificación Final: <span style="font-size:1.4rem; color:${colorScore};">${data.score.toFixed(1)} / 20</span></p>
+                <p style="margin:0.4rem 0 0 0; font-size:0.9rem; color:var(--text-muted);">🟢 Aciertos: ${data.correctCount} &nbsp;|&nbsp; 🔴 Errores: ${data.errorCount}</p>
             `;
 
-            const container = document.getElementById('feedback-details-container');
-            container.innerHTML = '';
+            let detailsContainer = document.getElementById('feedback-details-container');
+            detailsContainer.innerHTML = `<h4 style="font-family:Georgia, serif; color:var(--text-main); margin-bottom:1rem;">Retroalimentación y Explicaciones Detalladas:</h4>`;
 
-            details.forEach((d, idx) => {
-                const userChoiceText = (d.selectedOption !== -1) ? d.opciones[d.selectedOption] : "No respondida";
-                const correctChoiceText = d.opciones[d.respuestaCorrectaIndex];
-
-                container.innerHTML += `
-                    <div style="margin-bottom:1.2rem; padding:1.2rem; border-radius:12px; background:${d.isCorrect ? '#f0fdf4' : '#fef2f2'}; border:1px solid ${d.isCorrect ? '#86efac' : '#fca5a5'};">
-                        <div style="font-weight:700; color:var(--text-main); margin-bottom:0.4rem;">Pregunta ${idx + 1}: ${d.questionText}</div>
-                        <div style="font-size:0.9rem; margin-bottom:0.3rem;">Su respuesta: <strong style="color:${d.isCorrect ? '#059669' : '#ef4444'};">${userChoiceText}</strong></div>
-                        <div style="font-size:0.9rem; margin-bottom:0.5rem;">Respuesta Correcta: <strong style="color:#059669;">${correctChoiceText}</strong></div>
-                        <div style="font-size:0.85rem; color:var(--text-muted); background:rgba(255,255,255,0.7); padding:0.6rem; border-radius:6px;">
-                            <strong>Explicación:</strong> ${d.explicacion}
-                        </div>
-                    </div>
+            data.answersDetail.forEach((ans, idx) => {
+                let borderCol = ans.isCorrect ? '#86efac' : '#fca5a5';
+                let bgCol = ans.isCorrect ? '#f0fdf4' : '#fef2f2';
+                
+                let itemBox = document.createElement('div');
+                itemBox.style.cssText = `background:${bgCol}; border:1.5px solid ${borderCol}; border-radius:10px; padding:1.2rem; margin-bottom:1rem; font-size:0.9rem;`;
+                
+                itemBox.innerHTML = `
+                    <div style="font-weight:700; margin-bottom:0.4rem;">Pregunta ${idx + 1}: ${ans.question}</div>
+                    <div style="margin-bottom:0.4rem;">Estado: <strong style="color:${ans.isCorrect ? '#059669' : '#ef4444'}">${ans.isCorrect ? '✔ Correcto' : '✘ Incorrecto'}</strong></div>
+                    <div style="font-size:0.85rem; color:var(--text-muted); background:#fff; padding:0.6rem; border-radius:6px; border:1px solid var(--border-soft);"><strong>Explicación:</strong> ${ans.explanation}</div>
                 `;
+                detailsContainer.appendChild(itemBox);
             });
-
-            switchView('view-student-feedback');
         }
     </script>
 </body>
