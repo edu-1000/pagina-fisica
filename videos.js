@@ -1,158 +1,1311 @@
-const capitulosCatalog = [
-    { 
-        id: 1, 
-        title: "Capítulo 1: Vectores y Unidades", 
-        introLab: "Introducción al Laboratorio: Análisis de magnitudes físicas, sistemas de unidades fundamentales y operaciones con vectores.",
-        objGeneral: "Objetivo General: Comprender el marco analítico y geométrico de los vectores aplicados a la física experimental.",
-        color: "#1e3a8a", icon: "∰", folder: "CAPITULO 1" 
-    },
-    { 
-        id: 2, 
-        title: "Capítulo 2: Cinemática Unidimensional", 
-        introLab: "Introducción al Laboratorio: Estudio experimental del movimiento rectilíneo, velocidad instantánea y aceleración constante.",
-        objGeneral: "Objetivo General: Analizar las leyes cinemáticas mediante la recolección de datos de tiempo y posición.",
-        color: "#5b21b6", icon: "📈", folder: "CAPITULO 2" 
-    },
-    { 
-        id: 3, 
-        title: "Capítulo 3: Dinámica y Leyes de Newton", 
-        introLab: "Introducción al Laboratorio: Verificación experimental de la relación entre fuerza, masa y aceleración.",
-        objGeneral: "Objetivo General: Comprobar las leyes del movimiento de Newton utilizando sistemas dinámicos controlados.",
-        color: "#047857", icon: "⚪", folder: "CAPITULO 3" 
-    },
-    { 
-        id: 4, 
-        title: "Capítulo 4: Movimiento en Dos Dimensiones", 
-        introLab: "Introducción al Laboratorio: Análisis del movimiento de proyectiles y composición de velocidades perpendiculares.",
-        objGeneral: "Objetivo General: Determinar la independencia de los movimientos ortogonales en un plano bidimensional.",
-        color: "#d97706", icon: "📐", folder: "CAPITULO 4" 
-    },
-    { 
-        id: 5, 
-        title: "Capítulo 5: Inercia y Marcos de Referencia", 
-        introLab: "Introducción al Laboratorio: Observación de los efectos inerciales y el comportamiento de cuerpos en aceleración.",
-        objGeneral: "Objetivo General: Estudiar la tendencia de los cuerpos a mantener su estado de reposo o movimiento uniforme.",
-        color: "#be123c", icon: "⚛", folder: "CAPITULO 5" 
-    },
-    { 
-        id: 6, 
-        title: "Capítulo 6: Conservación del Momento Lineal", 
-        introLab: "Introducción al Laboratorio: Estudio de colisiones y la tercera ley de Newton en rieles de aire.",
-        objGeneral: "Objetivo General: Demostrar la conservación del momento lineal en sistemas cerrados durante choques elásticos e inelásticos.",
-        color: "#1d4ed8", icon: "⇄", folder: "CAPITULO 6" 
-    },
-    { 
-        id: 7, 
-        title: "Capítulo 7: Fricción y Rozamiento", 
-        introLab: "Introducción al Laboratorio: Medición de las fuerzas de fricción estática y cinética sobre diferentes superficies.",
-        objGeneral: "Objetivo General: Analizar los coeficientes de rozamiento y su dependencia con las condiciones de contacto.",
-        color: "#15803d", icon: "📦", folder: "CAPITULO 7" 
-    },
-    { 
-        id: 8, 
-        title: "Capítulo 8: Trabajo y Conservación de la Energía", 
-        introLab: "Introducción al Laboratorio: Transformaciones energéticas entre energía cinética y potencial en sistemas mecánicos.",
-        objGeneral: "Objetivo General: Comprobar el principio de conservación de la energía mecánica total en ausencia de fuerzas disipativas.",
-        color: "#1e40af", icon: "⚡", folder: "CAPITULO 8" 
-    },
-    { 
-        id: 9, 
-        title: "Capítulo 9: Centro de Masa y Equilibrio", 
-        introLab: "Introducción al Laboratorio: Determinación experimental del centro de gravedad y condiciones de equilibrio estático.",
-        objGeneral: "Objetivo General: Analizar la estabilidad de objetos regulares e irregulares mediante la ubicación de su centro de masa.",
-        color: "#6b21a8", icon: "⚛", folder: "CAPITULO 9" 
-    }
-];
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enciclopedia en Videos de Demostración de Física - UNMSM</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --panel-bg: #ffffff;
+            --panel-alt: #f1f5f9;
+            --accent-student: #059669;
+            --accent-student-hover: #047857;
+            --accent-teacher: #1e3a8a;
+            --accent-teacher-hover: #1e40af;
+            --highlight: #f59e0b;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-soft: #e2e8f0;
+            --border-strong: #cbd5e1;
+            --error: #ef4444;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.1);
+            --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.15);
+        }
 
-const videosPorCapitulo = {
-    1: [
-        { archivo: "Copia de 01-01 Unidades básicas.mp4", tema: "Sistemas de Unidades", objetivo: "Identificar las unidades fundamentales del sistema internacional." },
-        { archivo: "Copia de 01-02 Suma de vectores (paralelograma).mp4", tema: "Método del Paralelograma", objetivo: "Hallar la resultante gráfica y analítica de dos vectores concurrentes." },
-        { archivo: "Copia de 01-03 Suma de vectores (puntas con colas).mp4", tema: "Método del Polígono", objetivo: "Sumar múltiples vectores consecutivamente." },
-        { archivo: "Copia de 01-04 Componentes de un vector.mp4", tema: "Descomposición Vectorial", objetivo: "Separar un vector en sus proyecciones ortogonales x e y." },
-        { archivo: "Copia de 01-05 Producto punto de vectores.mp4", tema: "Producto Escalar", objetivo: "Calcular el producto punto y determinar el ángulo entre vectores." },
-        { archivo: "Copia de 01-06 Producto cruz de vectores.mp4", tema: "Producto Vectorial", objetivo: "Obtener un vector perpendicular mediante el producto cruz." },
-        { archivo: "Copia de 01-07 Componentes de vectores en 3 dimensiones.mp4", tema: "Vectores en el Espacio", objetivo: "Analizar componentes tridimensionales i, j, k." }
-    ],
-    2: [
-        { archivo: "Copia de 02-01 Velocidad constante.mp4", tema: "MRU", objetivo: "Evaluar un cuerpo con velocidad uniforme." },
-        { archivo: "Copia de 02-02 Buldócer sobre una hoja en movimiento.mp4", tema: "Sistemas de Referencia", objetivo: "Estudiar velocidades relativas." },
-        { archivo: "Copia de 02-03 Plano inclinado con pelota que rueda.mp4", tema: "MRUV en Plano", objetivo: "Analizar la aceleración constante cuesta abajo." },
-        { archivo: "Copia de 02-04 Aceleración constante.mp4", tema: "Dinámica de Caída Libre", objetivo: "Medir la aceleración debido a la gravedad." },
-        { archivo: "Copia de 02-05 Caída de una cuerda con tuercas.mp4", tema: "Intervalos de Tiempo", objetivo: "Comprobar proporciones de espacio en caída libre." },
-        { archivo: "Copia de 02-06 Tiempo de reacción a la caída de un metro.mp4", tema: "Reflejos y Cinemática", objetivo: "Calcular el tiempo de reacción biológico." },
-        { archivo: "Copia de 02-07 Guinea y pluma.mp4", tema: "Vacío y Gravedad", objetivo: "Demostrar la ausencia de resistencia del aire." }
-    ],
-    3: [
-        { archivo: "Copia de 03-01 Aceleración por una cuerda con clip.mp4", tema: "Segunda Ley de Newton", objetivo: "Relacionar fuerza neta y aceleración." },
-        { archivo: "Copia de 03-02 La máquina de Atwood.mp4", tema: "Máquinas Simples", objetivo: "Estudiar sistemas de masas conectadas por poleas." },
-        { archivo: "Copia de 03-03 Aceleración por un resorte.mp4", tema: "Fuerza Elástica", objetivo: "Analizar la ley de Hooke dinámica." },
-        { archivo: "Copia de 03-04 Slinky que cae.mp4", tema: "Ondas y Tensión", objetivo: "Estudiar el comportamiento de resortes colgantes." },
-        { archivo: "Copia de 03-05 Vela en un frasco que cae.mp4", tema: "Inercia Interna", objetivo: "Observar efectos de presión y gravedad en caída." }
-    ],
-    4: [
-        { archivo: "Copia de 04-01 Disparo-caída.mp4", tema: "Independencia de Movimientos", objetivo: "Comprobar caída simultánea horizontal." },
-        { archivo: "Copia de 04-02 Cañón contra monos.mp4", tema: "Proyectiles", objetivo: "Analizar la trayectoria parabólica bajo gravedad." },
-        { archivo: "Copia de 04-03 Cañón vertical sobre un carro.mp4", tema: "Inercia en Proyectiles", objetivo: "Conservación de velocidad horizontal." },
-        { archivo: "Copia de 04-04 Cañón vertical sobre un carro acelerado.mp4", tema: "Sistemas No Inerciales", objetivo: "Estudiar efectos de aceleración del carro." },
-        { archivo: "Copia de 04-05 Parábolas en una mesa de aire.mp4", tema: "Fricción Nula en 2D", objetivo: "Visualizar parábolas sin rozamiento." },
-        { archivo: "Copia de 04-06 Cañón de alcance variable.mp4", tema: "Ángulo de Tiro", objetivo: "Encontrar el ángulo de alcance máximo." },
-        { archivo: "Copia de 04-07 Suma vectorial de velocidades.mp4", tema: "Velocidades Relativas", objetivo: "Componer vectores de velocidad." },
-        { archivo: "Copia de 04-08 Buldócer sobre una hoja en movimiento (2 dimensiones).mp4", tema: "Trayectorias Compuestas", objetivo: "Analizar movimiento en dos ejes." },
-        { archivo: "Copia de 04-09 Pesas que se deslizan en un triángulo.mp4", tema: "Planos Inclinados 2D", objetivo: "Descomponer fuerzas en planos." },
-        { archivo: "Copia de 04-10 Navegando contra el viento.mp4", tema: "Vectores Aplicados", objetivo: "Estudiar fuerzas aerodinámicas." },
-        { archivo: "Copia de 04-11 Vertical local con aceleración.mp4", tema: "Aceleraciones Compuestas", objetivo: "Determinar la vertical efectiva." }
-    ],
-    5: [
-        { archivo: "Copia de 05-01 Inercia en un riel de aire que se desplaza.mp4", tema: "Marcos Inerciales", objetivo: "Observar movimiento sin fricción." },
-        { archivo: "Copia de 05-02 Cilindro de inercia.mp4", tema: "Momento de Inercia", objetivo: "Evaluar resistencia al giro." },
-        { archivo: "Copia de 05-03 Roca de hule espuma.mp4", tema: "Densidad y Apariencia", objetivo: "Analizar masa aparente vs real." },
-        { archivo: "Copia de 05-04 Sacudida del mantel.mp4", tema: "Primera Ley", objetivo: "Demostrar inercia de reposo." },
-        { archivo: "Copia de 05-05 Huevos y plato de pizza.mp4", tema: "Inercia en Práctica", objetivo: "Separar objetos mediante inercia rápida." },
-        { archivo: "Copia de 05-06 Lápiz y madera terciada.mp4", tema: "Impacto Rápido", objetivo: "Estudiar resistencia al cambio de estado." }
-    ],
-    6: [
-        { archivo: "Copia de 06-01 Deslizadores de reacción.mp4", tema: "Acción y Reacción", objetivo: "Comprobar fuerzas mutuas." },
-        { archivo: "Copia de 06-02 Conservación del momento de deslizadores de reacción.mp4", tema: "Momento Lineal", objetivo: "Verificar conservación en choques." },
-        { archivo: "Copia de 06-03 Carro sobre una tabla que rueda.mp4", tema: "Sistemas Acoplados", objetivo: "Analizar acción mutua." },
-        { archivo: "Copia de 06-04 Carro de ventilador con vela.mp4", tema: "Fuerzas Internas", objetivo: "Demostrar fuerzas netas nulas." },
-        { archivo: "Copia de 06-05 Cohete de CO2.mp4", tema: "Propulsión a Chorro", objetivo: "Aplicar conservación de cantidad de movimiento." },
-        { archivo: "Copia de 06-06 Cohete de agua.mp4", tema: "Propulsión Hídrica", objetivo: "Estudiar eyección de masa." },
-        { archivo: "Copia de 06-07 Carro movido por un extinguidor de fuego.mp4", tema: "Gas a Presión", objetivo: "Evaluar empuje por gases." },
-        { archivo: "Copia de 06-08 Hélice.mp4", tema: "Empuje Aerodinámico", objetivo: "Analizar generación de fuerza." },
-        { archivo: "Copia de 06-09 Carros de reacción en un subibaja.mp4", tema: "Momento Angular y Lineal", objetivo: "Estudiar equilibrio dinámico." }
-    ],
-    7: [
-        { archivo: "Copia de 07-01 Fricción en un riel de aire.mp4", tema: "Superficie sin Fricción", objetivo: "Comprobar movimiento ideal." },
-        { archivo: "Copia de 07-02 Fricción estática vs. Fricción cinética.mp4", tema: "Coeficientes de Fricción", objetivo: "Medir la diferencia de fuerzas." },
-        { archivo: "Copia de 07-03 Dependencia de la fricción con respecto al área.mp4", tema: "Independencia del Área", objetivo: "Demostrar que el área no afecta la fricción." },
-        { archivo: "Copia de 07-04 Dependencia de la fricción con respecto al peso.mp4", tema: "Fuerza Normal", objetivo: "Relacionar peso y fricción." },
-        { archivo: "Copia de 07-05 Dependencia de la fricción con respecto a la superfície.mp4", tema: "Naturaleza de Superficies", objetivo: "Evaluar rugosidad." },
-        { archivo: "Copia de 07-06 Estabilidad de un carro que rueda.mp4", tema: "Fricción en Ruedas", objetivo: "Analizar rozamiento por rodadura." }
-    ],
-    8: [
-        { archivo: "Copia de 08-01 Martinete.mp4", tema: "Trabajo Mecánico", objetivo: "Evaluar transferencia de energía." },
-        { archivo: "Copia de 08-02 Cañón de resorte.mp4", tema: "Energía Potencial Elástica", objetivo: "Convertir energía de resorte en cinética." },
-        { archivo: "Copia de 08-03 El saltarín.mp4", tema: "Rebote Elástico", objetivo: "Estudiar restitución de energía." },
-        { archivo: "Copia de 08-04 Dependencia de la energía de un resorte del cuadrado de la distancia.mp4", tema: "Energía Cuadrática", objetivo: "Comprobar fórmula de energía elástica." },
-        { archivo: "Copia de 08-05 Paradoja del gran rebote.mp4", tema: "Transferencia de Momento", objetivo: "Analizar multiplicación de velocidad en rebotes." },
-        { archivo: "Copia de 08-06 Riel de pozo de energía.mp4", tema: "Pozos Potenciales", objetivo: "Estudiar conservación en desniveles." },
-        { archivo: "Copia de 08-07 El péndulo de Galileo.mp4", tema: "Conservación de Energía en Péndulos", objetivo: "Verificar altura máxima constante." },
-        { archivo: "Copia de 08-08 Péndulo de bola de boliche.mp4", tema: "Seguridad y Energía", objetivo: "Demostrar que la energía no supera la inicial." },
-        { archivo: "Copia de 08-09 Riel triple.mp4", tema: "Comparación de Pistas", objetivo: "Evaluar tiempos de descenso." },
-        { archivo: "Copia de 08-10 Generador movido a mano.mp4", tema: "Conversión Energética", objetivo: "Transformar trabajo mecánico en eléctrico." },
-        { archivo: "Copia de 08-11 Generador movido por una pesa que cae.mp4", tema: "Potencia Constante", objetivo: "Analizar caída de pesa y generación." },
-        { archivo: "Copia de 08-12 Freno de fricción constante.mp4", tema: "Disipación de Energía", objetivo: "Estudiar conversión de energía en calor." }
-    ],
-    9: [
-        { archivo: "Copia de 09-01 Estabilidad.mp4", tema: "Equilibrio Estable e Inestable", objetivo: "Determinar condiciones de vuelco." },
-        { archivo: "Copia de 09-02 Centro de masa de un objeto irregular.mp4", tema: "Plomada y Centro de Gravedad", objetivo: "Hallar el centro de masa geométrico." },
-        { archivo: "Copia de 09-03 Centro de masa de un disco.mp4", tema: "Simetría de Masa", objetivo: "Localizar el centro en cuerpos simétricos." },
-        { archivo: "Copia de 09-04 Silla en un pedestal.mp4", tema: "Línea de Gravedad", objetivo: "Verificar equilibrio sobre base estrecha." },
-        { archivo: "Copia de 09-05 Payaso en la cuerda floja.mp4", tema: "Centro de Masa Bajo el Poyo", objetivo: "Lograr estabilidad con contrapesos." },
-        { archivo: "Copia de 09-06 Cono doble en una pendiente.mp4", tema: "Paradoja del Cono", objetivo: "Analizar aparente subida por bajada del centro de masa." },
-        { archivo: "Copia de 09-07 Disco cargado.mp4", tema: "Desplazamiento de Masa", objetivo: "Modificar el comportamiento dinámico." },
-        { archivo: "Copia de 09-08 Cilindros que caen.mp4", tema: "Inercia Rotacional y CM", objetivo: "Estudiar descenso de cilindros." },
-        { archivo: "Copia de 09-09 Centro de masa en una mesa de aire.mp4", tema: "Centro de Masa Libre", objetivo: "Seguir la trayectoria del CM sin fuerzas externas." }
-    ]
-};
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border-bottom: 4px solid var(--accent-student);
+            padding: 1.4rem 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .header-logo-placeholder {
+            width: 75px; height: 75px;
+            background: linear-gradient(135deg, var(--accent-student), #34d399);
+            color: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-text { text-align: left; flex: 1; min-width: 280px; }
+        .header-instituciones {
+            font-size: 0.78rem; font-weight: 700;
+            letter-spacing: 1.2px; color: var(--accent-student);
+            text-transform: uppercase;
+        }
+
+        header h1 { margin: 0.1rem 0; font-family: Georgia, serif; font-size: 1.65rem; color: var(--text-main); }
+        header h2 { margin: 0; font-size: 0.8rem; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+
+        .container { max-width: 1150px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .role-selection-box {
+            background: var(--panel-bg);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-soft);
+            max-width: 850px;
+            margin: 2rem auto;
+        }
+
+        .role-selection-box h3 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 2.2rem;
+            font-family: Georgia, serif;
+        }
+
+        .role-buttons-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .role-card {
+            border-radius: 16px;
+            padding: 1.8rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.8rem;
+            box-shadow: var(--shadow-md);
+            border: 2px solid var(--border-soft);
+            text-align: left;
+            width: 100%;
+        }
+
+        .role-card.student { background: #f0fdf4; border-color: #86efac; }
+        .role-card.student:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(5, 150, 105, 0.2);
+            border-color: #059669;
+        }
+
+        .role-card.teacher { background: #f8fafc; border-color: #cbd5e1; }
+        .role-card.teacher:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(30, 58, 138, 0.2);
+            border-color: #1e3a8a;
+        }
+
+        .role-card-icon {
+            width: 85px; height: 85px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; box-shadow: var(--shadow-sm);
+        }
+
+        .role-card.student .role-card-icon { background: #059669; color: #ffffff; }
+        .role-card.teacher .role-card-icon { background: #1e3a8a; color: #ffffff; }
+
+        .role-card-body { display: flex; flex-direction: column; gap: 0.3rem; }
+        .role-card-title { font-size: 1.45rem; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+        .role-card.student .role-card-title { color: #065f46; }
+        .role-card.teacher .role-card-title { color: #1e3a8a; }
+        .role-card-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.4; font-weight: 500; }
+
+        .chapters-selection-list {
+            display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1rem;
+            max-height: 480px; overflow-y: auto; padding-right: 0.3rem;
+        }
+
+        .chapter-select-card {
+            background: #ffffff; border: 2px solid var(--border-soft); border-radius: 14px;
+            padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1.2rem; cursor: pointer;
+            transition: all 0.2s ease; text-align: left;
+        }
+
+        .chapter-select-card:hover { border-color: var(--accent-student); background: #f8fafc; transform: translateY(-2px); }
+        .chapter-select-card.selected { border-color: #059669; background: #f0fdf4; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15); }
+
+        .chapter-icon-badge {
+            width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: #ffffff; flex-shrink: 0; box-shadow: var(--shadow-sm);
+        }
+
+        .chapter-card-info { flex: 1; }
+        .chapter-card-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+        .chapter-arrow { color: var(--text-muted); font-size: 1.2rem; font-weight: 700; }
+
+        .form-card {
+            background: var(--panel-bg); border: 1.5px solid var(--border-soft);
+            border-radius: 16px; padding: 2.2rem; box-shadow: var(--shadow-md);
+            max-width: 850px; margin: 0 auto 2rem auto;
+        }
+
+        .form-card h3 {
+            margin-top: 0; color: var(--text-main); font-family: Georgia, serif;
+            font-size: 1.35rem; border-bottom: 2px solid var(--panel-alt); padding-bottom: 0.75rem;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.2rem; }
+        .form-field { display: flex; flex-direction: column; gap: 0.35rem; }
+        .form-field.full { grid-column: 1 / -1; }
+
+        .form-field label { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--text-main); }
+        .form-field label .req { color: var(--error); }
+        .form-field input, .form-field select, .form-field textarea {
+            padding: 0.8rem 0.95rem; border: 1.5px solid var(--border-strong);
+            border-radius: 8px; font-size: 0.95rem; background: #fff; font-family: inherit;
+        }
+
+        .btn-action-student {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: #ffffff; border: none; padding: 1rem 1.5rem;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+            font-size: 0.95rem; width: 100%; text-transform: uppercase;
+            letter-spacing: 1px; margin-top: 1.5rem;
+            transition: background 0.2s;
+        }
+        .btn-action-student:hover { background: linear-gradient(135deg, #047857, #065f46); }
+
+        .btn-action-teacher {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            color: #ffffff; border: none; padding: 1rem 1.5rem;
+            border-radius: 10px; cursor: pointer; font-weight: 700;
+            font-size: 0.95rem; width: 100%; text-transform: uppercase;
+            letter-spacing: 1px; margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: #ffffff; color: var(--text-main); border: 1.5px solid var(--border-strong);
+            padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+        }
+
+        .alert-banner-docente {
+            background: #f0fdf4; border: 2px solid #86efac; border-left: 6px solid #059669;
+            padding: 1.2rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; color: #166534;
+        }
+
+        .teacher-stats-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem;
+        }
+        @media (max-width: 750px) { .teacher-stats-grid { grid-template-columns: 1fr; } }
+
+        .stat-card {
+            background: #ffffff; border-radius: 12px; padding: 1.2rem; border: 1.5px solid var(--border-soft);
+            box-shadow: var(--shadow-sm); border-left: 5px solid #1e3a8a;
+        }
+        .stat-card.success { border-left-color: #059669; }
+        .stat-card.danger { border-left-color: #ef4444; }
+        .stat-card-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .stat-card-body { font-size: 0.92rem; font-weight: 600; color: var(--text-main); }
+
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+        .dashboard-table-container { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border-soft); overflow-x: auto; margin-bottom: 2rem; }
+        
+        table.dashboard-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; }
+        table.dashboard-table th { background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #ffffff; padding: 0.9rem 1rem; font-size: 0.8rem; text-transform: uppercase; }
+        table.dashboard-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-soft); }
+        table.dashboard-table tr:hover { background: var(--panel-alt); }
+
+        .chapter-header-box {
+            background: #ffffff; border-radius: 16px; padding: 1.6rem 2rem;
+            border: 1.5px solid var(--border-soft); border-left: 6px solid #059669; margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm); display: flex; gap: 1.4rem; align-items: flex-start;
+        }
+        .chapter-header-icon {
+            width: 58px; height: 58px; border-radius: 50%; background: #1e3a8a; color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .lab-info-card {
+            background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px;
+            padding: 1.1rem 1.3rem; margin-top: 0.6rem; font-size: 0.9rem; color: #1e3a8a; line-height: 1.5;
+        }
+
+        .video-card {
+            background: #ffffff; border-radius: 16px; padding: 1.8rem; margin-bottom: 2rem;
+            border: 1.5px solid var(--border-soft); box-shadow: var(--shadow-sm);
+        }
+        .video-title-bar {
+            font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.3rem; font-family: Georgia, serif;
+        }
+        .video-theme-bar {
+            font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 500;
+        }
+        .video-responsive video {
+            width: 100%; max-height: 440px; border-radius: 10px; background: #000; display: block; margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .video-objective-box {
+            background: #f8fafc; border: 1.5px solid var(--border-soft); border-left: 4px solid var(--accent-teacher);
+            padding: 0.9rem 1.2rem; border-radius: 8px; font-size: 0.9rem; color: var(--text-main); margin-bottom: 1.5rem;
+        }
+        
+        .quiz-container-box {
+            background: #fffdf5; border: 1.5px solid #fde047; border-left: 5px solid #f59e0b;
+            border-radius: 12px; padding: 1.5rem; margin-top: 1.2rem;
+        }
+        .quiz-title {
+            font-size: 0.82rem; font-weight: 800; letter-spacing: 1.2px; color: #b45309; text-transform: uppercase;
+            border-bottom: 2px dashed #fef08a; padding-bottom: 0.5rem; margin-bottom: 1.3rem;
+        }
+        .quiz-question-item {
+            margin-bottom: 1.5rem; font-size: 0.92rem;
+        }
+        .quiz-question-title {
+            font-weight: 700; color: var(--text-main); margin-bottom: 0.6rem; line-height: 1.45;
+        }
+        .quiz-option-label {
+            display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem;
+            font-size: 0.9rem; color: var(--text-main); cursor: pointer; padding: 0.4rem 0.6rem;
+            border-radius: 6px; transition: background 0.15s;
+        }
+        .quiz-option-label:hover { background: #fef3c7; }
+        .quiz-option-label input { margin-top: 3px; cursor: pointer; }
+
+        .teacher-config-video-card {
+            background: #f8fafc; border: 1.5px solid var(--border-strong); border-radius: 14px;
+            padding: 1.5rem; margin-bottom: 1.5rem;
+        }
+        .teacher-suggested-q {
+            background: #ffffff; border: 1px solid var(--border-soft); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.88rem;
+        }
+        .custom-q-builder {
+            background: #f0fdf4; border: 1.5px dashed #86efac; padding: 1.2rem; border-radius: 10px; margin-top: 1.2rem;
+        }
+
+        .comment-box-list {
+            background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem;
+        }
+        .comment-item {
+            padding: 0.8rem 0; border-bottom: 1px solid var(--border-soft); font-size: 0.9rem;
+        }
+        .comment-item:last-child { border-bottom: none; }
+
+        @media print {
+            header, .btn-secondary, .btn-action-teacher, .btn-action-student, #view-role-selection { display: none !important; }
+            body { background: #fff; color: #000; }
+            .container { max-width: 100% !important; margin: 0; padding: 0; }
+            .dashboard-table-container { border: none; box-shadow: none; }
+            table.dashboard-table th { background: #1e3a8a !important; color: #fff !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+
+    <!-- LIBRERÍAS DE FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="header-logo-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="38" height="38">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+            </div>
+            <div class="header-text">
+                <div class="header-instituciones">Universidad Nacional Mayor de San Marcos · Facultad de Ciencias Físicas</div>
+                <h1>Enciclopedia en Videos de Demostración de Física</h1>
+                <h2>Portal Académico Interactivo</h2>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. PORTADA PRINCIPAL -->
+        <div id="view-role-selection" class="view active">
+            <div class="role-selection-box">
+                <h3>Bienvenido a la Enciclopedia. Seleccione su rol:</h3>
+                <div class="role-buttons-grid">
+                    <button class="role-card student" onclick="switchView('view-student-access')">
+                        <div class="role-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="44" height="44">
+                                <path d="M22 10l-10-5L2 10l10 5 10-5z" fill="currentColor" fill-opacity="0.2"/>
+                                <path d="M22 10l-10-5L2 10l10 5 10-5z"/>
+                                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                                <path d="M22 10v6"/>
+                            </svg>
+                        </div>
+                        <div class="role-card-body">
+                            <div class="role-card-title">SOY ALUMNO</div>
+                            <div class="role-card-desc">Accede a tus cursos, videos y evaluaciones</div>
+                        </div>
+                    </button>
+
+                    <button class="role-card teacher" onclick="switchView('view-teacher-register')">
+                        <div class="role-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="44" height="44">
+                                <rect x="3" y="4" width="18" height="12" rx="2" fill="currentColor" fill-opacity="0.15"/>
+                                <rect x="3" y="4" width="18" height="12" rx="2"/>
+                                <path d="M7 20h10"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 11h6"/>
+                            </svg>
+                        </div>
+                        <div class="role-card-body">
+                            <div class="role-card-title">SOY DOCENTE</div>
+                            <div class="role-card-desc">Gestiona a tus alumnos, calificaciones y contenido</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. REGISTRO DE CLASE (DOCENTE) -->
+        <div id="view-teacher-register" class="view">
+            <div class="form-card">
+                <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-bottom: 1rem;">← Volver</button>
+                <h3>Registro de Clase y Selección de Capítulo</h3>
+                <div class="form-grid">
+                    <div class="form-field full">
+                        <label>Nombre del Docente <span class="req">*</span></label>
+                        <input type="text" id="t-teachername" placeholder="Ej: Dr. Juan Pérez">
+                    </div>
+                    <div class="form-field">
+                        <label>Nombre de la Clase <span class="req">*</span></label>
+                        <input type="text" id="t-classname" placeholder="Ej: Newton">
+                    </div>
+                    <div class="form-field">
+                        <label>Contraseña de la Clase <span class="req">*</span></label>
+                        <input type="password" id="t-pass" placeholder="Contraseña">
+                    </div>
+                    
+                    <div class="form-field full">
+                        <label>Seleccionar Capítulo Asignado <span class="req">*</span></label>
+                        <div class="chapters-selection-list" id="chapters-cards-container"></div>
+                    </div>
+                </div>
+                <button class="btn-action-teacher" onclick="goToTeacherConfig()">CONTINUAR A CONFIGURACIÓN DE PREGUNTAS ➔</button>
+            </div>
+        </div>
+
+        <!-- 3. CONFIGURACIÓN DE PREGUNTAS Y PROPUESTA DE NUEVAS PREGUNTAS (DOCENTE) -->
+        <div id="view-teacher-config" class="view">
+            <div class="form-card" style="max-width: 950px;">
+                <button class="btn-secondary" onclick="switchView('view-teacher-register')" style="margin-bottom: 1rem;">← Cambiar Capítulo</button>
+                <div id="teacher-config-header-info"></div>
+                <div id="teacher-config-videos-container" style="margin-top: 1.5rem;"></div>
+                <button class="btn-action-teacher" onclick="saveTeacherConfiguration()">CREAR E INICIAR LA CLASE ➔</button>
+            </div>
+        </div>
+
+        <!-- 4. PANEL DEL DOCENTE Y ESTADÍSTICAS -->
+        <div id="view-teacher-dashboard" class="view">
+            <div class="alert-banner-docente" id="docente-info-banner"></div>
+            
+            <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h3 style="margin:0; color:var(--text-main); font-family:Georgia, serif;">Panel de Control de la Clase</h3>
+                </div>
+                <div>
+                    <button class="btn-secondary" onclick="openTeacherQuestionBank()" style="background: #1e3a8a; color: #fff; border: none; padding: 0.7rem 1.2rem; font-weight: 700;">📖 Ver Banco de Preguntas del Capítulo</button>
+                    <button class="btn-secondary" onclick="window.print()" style="background:#059669; color:#fff; border:none; padding: 0.7rem 1.2rem; font-weight: 700;">🖨️ Imprimir Reporte / Guardar PDF</button>
+                </div>
+            </div>
+
+            <div class="teacher-stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-card-title">⭐ Pregunta más acertada por el aula</div>
+                    <div class="stat-card-body" id="stat-most-correct">Calculando datos...</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-card-title">⚠️ Pregunta con mayor dificultad</div>
+                    <div class="stat-card-body" id="stat-least-correct">Calculando datos...</div>
+                </div>
+            </div>
+
+            <div class="teacher-stats-grid" style="margin-bottom: 1.5rem;">
+                <div class="stat-card" style="border-left-color: #f59e0b;">
+                    <div class="stat-card-title">📊 Evaluaciones de la Página (Promedios)</div>
+                    <div class="stat-card-body" id="stat-page-ratings">Calculando calificaciones...</div>
+                </div>
+                <div class="stat-card" style="border-left-color: #059669;">
+                    <div class="stat-card-title">💬 Comentarios y Sugerencias de Alumnos</div>
+                    <div class="stat-card-body" id="stat-comments-count">0 comentarios registrados</div>
+                </div>
+            </div>
+
+            <div class="dashboard-header">
+                <h3 style="margin:0; color:var(--text-main); font-family:Georgia, serif;">Registro y Calificación de Alumnos</h3>
+            </div>
+
+            <div class="dashboard-table-container">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Puesto</th>
+                            <th>Apellidos y Nombres</th>
+                            <th>Código</th>
+                            <th>Grupo</th>
+                            <th>Nota Final (0-20)</th>
+                            <th>Aciertos / Errores</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body"></tbody>
+                </table>
+            </div>
+
+            <div class="comment-box-list">
+                <h4 style="margin:0 0 1rem 0; color:var(--text-main); font-family:Georgia, serif;">Comentarios y Sugerencias Recibidas de los Alumnos</h4>
+                <div id="teacher-comments-container">
+                    <p style="color:var(--text-muted); font-size:0.9rem;">Aún no hay comentarios registrados.</p>
+                </div>
+            </div>
+
+            <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-top: 2rem;">Cerrar Sesión Docente</button>
+        </div>
+
+        <!-- 4.1 VISTA ADICIONAL: BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO (SOLO LECTURA PARA DOCENTE) -->
+        <div id="view-teacher-bank-detail" class="view">
+            <div class="form-card" style="max-width: 950px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="margin: 0; color: #1e3a8a;" id="teacher-bank-header-title">Banco de Preguntas y Respuestas Oficiales</h3>
+                    <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')">← Volver al Panel de Notas</button>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">A continuación se muestran las preguntas, alternativas y la respuesta correcta del capítulo seleccionado para esta clase en específico:</p>
+                
+                <div id="teacher-bank-detail-container"></div>
+
+                <button class="btn-secondary" onclick="switchView('view-teacher-dashboard')" style="margin-top: 2rem;">← Volver al Panel de Notas</button>
+            </div>
+        </div>
+
+        <!-- 5. ACCESO DEL ESTUDIANTE -->
+        <div id="view-student-access" class="view">
+            <div class="form-card">
+                <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-bottom: 1rem;">← Volver</button>
+                <h3>Acceso del Estudiante</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">Ingrese con el nombre de la clase y contraseña asignados por su docente.</p>
+                
+                <div class="form-grid">
+                    <div class="form-field full">
+                        <label>Apellidos y Nombres <span class="req">*</span></label>
+                        <input type="text" id="s-name" placeholder="Quispe Mendoza, Carlos Alberto">
+                    </div>
+                    <div class="form-field">
+                        <label>Código de Matrícula <span class="req">*</span></label>
+                        <input type="text" id="s-code" placeholder="20130026">
+                    </div>
+                    <div class="form-field">
+                        <label>Grupo / Sección <span class="req">*</span></label>
+                        <select id="s-group">
+                            <option value="1">Grupo 1</option>
+                            <option value="2">Grupo 2</option>
+                            <option value="3" selected>Grupo 3</option>
+                            <option value="4">Grupo 4</option>
+                            <option value="5">Grupo 5</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Nombre de la Clase <span class="req">*</span></label>
+                        <input type="text" id="s-classname" placeholder="Ej: Newton">
+                    </div>
+                    <div class="form-field">
+                        <label>Contraseña <span class="req">*</span></label>
+                        <input type="password" id="s-pass" placeholder="Contraseña">
+                    </div>
+                </div>
+                <button class="btn-action-student" onclick="studentEnter()">INGRESAR A LA CLASE ➔</button>
+            </div>
+        </div>
+
+        <!-- 6. ENTORNO DE TRABAJO DEL ESTUDIANTE (VIDEOS Y PREGUNTAS) -->
+        <div id="view-student-workspace" class="view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.5rem;">
+                <button class="btn-secondary" onclick="switchView('view-student-access')">← Salir de la Clase</button>
+                <div id="student-session-info" style="font-weight:700; color:#059669;"></div>
+            </div>
+            
+            <div id="workspace-chapter-banner"></div>
+            <div id="workspace-videos-container"></div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <button class="btn-action-student" onclick="proceedToPageEvaluation()" style="max-width: 400px; font-size: 1.05rem;">EVALUAR (IR A CALIFICACIÓN DE LA PÁGINA) ➔</button>
+            </div>
+        </div>
+
+        <!-- 7. INTERFAZ APARTE: EVALUACIÓN DE LA PÁGINA WEB Y COMENTARIOS -->
+        <div id="view-page-evaluation" class="view">
+            <div class="form-card" style="max-width: 750px;">
+                <button class="btn-secondary" onclick="switchView('view-student-workspace')" style="margin-bottom: 1rem;">← Volver al Cuestionario</button>
+                <h3 style="color: #065f46; font-family: Georgia, serif;">Evaluación Obligatoria de la Página Web</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Para poder visualizar su nota final, aciertos, errores y explicaciones detalladas, es requisito obligatorio calificar la plataforma y dejar su comentario.</p>
+                
+                <div class="form-field" style="margin-bottom: 1.2rem;">
+                    <label>1. ¿Qué tan útil y clara fue la interfaz para su aprendizaje? <span class="req">*</span></label>
+                    <select id="eval-q1">
+                        <option value="5">5 - Excelente / Muy útil</option>
+                        <option value="4">4 - Buena</option>
+                        <option value="3" selected>3 - Regular</option>
+                        <option value="2">2 - Poco útil</option>
+                        <option value="1">1 - Deficiente</option>
+                    </select>
+                </div>
+
+                <div class="form-field" style="margin-bottom: 1.2rem;">
+                    <label>2. ¿Cómo califica la calidad y nitidez de los videos demostrativos? <span class="req">*</span></label>
+                    <select id="eval-q2">
+                        <option value="5">5 - Excelente calidad</option>
+                        <option value="4">4 - Buena</option>
+                        <option value="3" selected>3 - Aceptable</option>
+                        <option value="2">2 - Baja calidad</option>
+                        <option value="1">1 - Mala</option>
+                    </select>
+                </div>
+
+                <div class="form-field" style="margin-bottom: 1.2rem;">
+                    <label>3. ¿Qué tan didácticos fueron los cuestionarios y la retroalimentación? <span class="req">*</span></label>
+                    <select id="eval-q3">
+                        <option value="5">5 - Muy didácticos</option>
+                        <option value="4">4 - Buenos</option>
+                        <option value="3" selected>3 - Regulares</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select>
+                </div>
+
+                <div class="form-field" style="margin-bottom: 1.5rem;">
+                    <label>Comentarios y sugerencias para mejorar la página: <span class="req">*</span></label>
+                    <textarea id="eval-comment" rows="4" placeholder="Escriba aquí sus sugerencias u opiniones detalladas..."></textarea>
+                </div>
+
+                <button class="btn-action-student" onclick="submitEvaluationAndGetResults()">ENVIAR EVALUACIÓN Y VER MI NOTA Y RESPUESTAS ➔</button>
+            </div>
+        </div>
+
+        <!-- 8. INTERFAZ DE RETROALIMENTACIÓN (FEEDBACK) PARA EL ALUMNO -->
+        <div id="view-student-feedback" class="view">
+            <div class="form-card" style="max-width: 900px;">
+                <button class="btn-secondary" onclick="switchView('view-role-selection')" style="margin-bottom: 1rem;">← Salir al Inicio</button>
+                <div id="feedback-header-box" style="text-align: center; margin-bottom: 2rem; padding: 1.5rem; background: #f0fdf4; border-radius: 14px; border: 1.5px solid #86efac;"></div>
+                <div id="feedback-details-container"></div>
+                <button class="btn-action-student" onclick="switchView('view-role-selection')" style="margin-top: 2rem;">FINALIZAR Y SALIR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CARGA DE ARCHIVOS JS EXTERNOS (VIDEOS Y PREGUNTAS) -->
+    <script src="videos.js"></script>
+    <script src="pregunta.js"></script>
+
+    <script>
+        // Nombres oficiales exactos de los 9 capítulos según tus imágenes e interfaz
+        const chapterNames = {
+            1: "Vectores y Unidades",
+            2: "Cinemática Unidimensional",
+            3: "Dinámica y Leyes de Newton",
+            4: "Movimiento en Dos Dimensiones",
+            5: "Inercia y Marcos de Referencia",
+            6: "Conservación del Momento Lineal",
+            7: "Fricción y Rozamiento",
+            8: "Trabajo y Conservación de la Energía",
+            9: "Centro de Masa y Equilibrio"
+        };
+
+        const chapterColors = {
+            1: "#1e3a8a",
+            2: "#7c3aed",
+            3: "#047857",
+            4: "#d97706",
+            5: "#dc2626",
+            6: "#0891b2",
+            7: "#047857",
+            8: "#3b82f6",
+            9: "#7c3aed"
+        };
+
+        // Símbolos SVG vectoriales personalizados para cada capítulo en vez de números
+        const chapterSvgs = {
+            1: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>`,
+            2: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 16 3-4 3 2 4-6"/></svg>`,
+            3: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>`,
+            4: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><path d="m3 21 18-18M3 3v18h18"/></svg>`,
+            5: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/></svg>`,
+            6: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>`,
+            7: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12"/></svg>`,
+            8: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>`,
+            9: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>`
+        };
+
+        // Configuración de Firebase Realtime Database
+        const firebaseConfig = {
+            apiKey: "AIzaSyDGh2mQiNkVyv5E15v7LqK8bQ39c5mZ8v4",
+            authDomain: "enciclopediafisica-7793b.firebaseapp.com",
+            databaseURL: "https://enciclopediafisica-7793b-default-rtdb.firebaseio.com",
+            projectId: "enciclopediafisica-7793b",
+            storageBucket: "enciclopediafisica-7793b.appspot.com",
+            messagingSenderId: "658717387773",
+            appId: "1:658717387773:web:3f16395e3ac000c8e28794"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        let currentStudent = null;
+        let classroomConfig = null;
+        let selectedChapterId = 1;
+        let cachedStudentsData = {};
+        let activeQuestionsRendered = [];
+        let temporaryStudentScoreData = null;
+        let teacherCustomQuestions = {};
+
+        window.onload = function() {
+            renderChapterSelectionCards();
+        };
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON SÍMBOLOS Y NOMBRES OFICIALES ---
+        function renderChapterSelectionCards() {
+            const container = document.getElementById('chapters-cards-container');
+            if(!container || typeof bancoPreguntas === 'undefined') return;
+            container.innerHTML = '';
+
+            for(let capId in bancoPreguntas) {
+                let titleName = chapterNames[capId] || `Capítulo ${capId}`;
+                let colorBg = chapterColors[capId] || '#1e3a8a';
+                let svgIcon = chapterSvgs[capId] || chapterSvgs[1];
+
+                let card = document.createElement('div');
+                card.className = `chapter-select-card ${capId == selectedChapterId ? 'selected' : ''}`;
+                card.onclick = () => {
+                    selectedChapterId = capId;
+                    document.querySelectorAll('.chapter-select-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                };
+
+                card.innerHTML = `
+                    <div class="chapter-icon-badge" style="background:${colorBg}">${svgIcon}</div>
+                    <div class="chapter-card-info">
+                        <div class="chapter-card-title">Capítulo ${capId}: ${titleName}</div>
+                    </div>
+                    <div class="chapter-arrow">➔</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        // --- CONFIGURACIÓN DE PREGUNTAS Y PROPUESTA DE NUEVAS PREGUNTAS (DOCENTE) ---
+        function goToTeacherConfig() {
+            const teacherName = document.getElementById('t-teachername').value.trim();
+            const className = document.getElementById('t-classname').value.trim();
+            const pass = document.getElementById('t-pass').value.trim();
+
+            if(!teacherName || !className || !pass) {
+                alert('Por favor, complete todos los campos obligatorios del registro.');
+                return;
+            }
+
+            classroomConfig = {
+                teacherName,
+                className,
+                pass,
+                chapterId: selectedChapterId
+            };
+
+            let capTitleFull = `Capítulo ${selectedChapterId}: ${chapterNames[selectedChapterId] || ''}`;
+
+            document.getElementById('teacher-config-header-info').innerHTML = `
+                <h3 style="color:#1e3a8a;">Configuración de Preguntas - ${capTitleFull}</h3>
+                <p style="font-size:0.88rem; color:var(--text-muted);">Clase: <strong>${className}</strong> | Docente: <strong>${teacherName}</strong></p>
+            `;
+
+            let vidContainer = document.getElementById('teacher-config-videos-container');
+            vidContainer.innerHTML = '';
+
+            let chapterData = bancoPreguntas[selectedChapterId];
+            if(chapterData && chapterData.videos) {
+                chapterData.videos.forEach((vid, vIdx) => {
+                    let vidBox = document.createElement('div');
+                    vidBox.className = 'teacher-config-video-card';
+                    vidBox.innerHTML = `
+                        <h4 style="margin:0 0 0.3rem 0; color:var(--text-main); font-family:Georgia, serif;">${vid.titulo}</h4>
+                        <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${vid.tema}</p>
+                        <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; color:#1e3a8a;">Preguntas oficiales del banco asociadas a este video:</div>
+                        <div id="official-q-list-${vIdx}"></div>
+
+                        <div class="custom-q-builder">
+                            <h5 style="margin:0 0 0.5rem 0; color:#065f46; font-size:0.92rem;">💡 Proponer o Reemplazar Pregunta para este Video</h5>
+                            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.8rem;">Agregue una nueva pregunta alternativa para enriquecer la evaluación y evitar que sea repetitiva:</p>
+                            
+                            <div class="form-field" style="margin-bottom:0.6rem;">
+                                <label style="font-size:0.75rem;">Enunciado de la Pregunta:</label>
+                                <input type="text" id="custom-q-text-${vIdx}" placeholder="Ej: ¿Qué ocurre con la magnitud si..." style="font-size:0.88rem; padding:0.6rem;">
+                            </div>
+                            <div class="form-grid" style="margin-top:0; gap:0.6rem;">
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa A:</label>
+                                    <input type="text" id="custom-q-a-${vIdx}" placeholder="Opción A" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa B:</label>
+                                    <input type="text" id="custom-q-b-${vIdx}" placeholder="Opción B" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa C:</label>
+                                    <input type="text" id="custom-q-c-${vIdx}" placeholder="Opción C" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Alternativa D:</label>
+                                    <input type="text" id="custom-q-d-${vIdx}" placeholder="Opción D" style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                            </div>
+                            <div class="form-grid" style="margin-top:0.6rem; gap:0.6rem;">
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Respuesta Correcta:</label>
+                                    <select id="custom-q-correct-${vIdx}" style="font-size:0.85rem; padding:0.5rem;">
+                                        <option value="0">Opción A</option>
+                                        <option value="1">Opción B</option>
+                                        <option value="2">Opción C</option>
+                                        <option value="3">Opción D</option>
+                                    </select>
+                                </div>
+                                <div class="form-field">
+                                    <label style="font-size:0.75rem;">Explicación Didáctica:</label>
+                                    <input type="text" id="custom-q-exp-${vIdx}" placeholder="Por qué es correcta..." style="font-size:0.85rem; padding:0.5rem;">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-secondary" onclick="addCustomTeacherQuestion('${vid.id}', ${vIdx})" style="margin-top:0.8rem; background:#059669; color:#fff; border:none; width:100%; justify-content:center;">➕ Agregar Pregunta Propuesta</button>
+                            <div id="custom-q-status-${vIdx}" style="font-size:0.8rem; color:#059669; margin-top:0.4rem; font-weight:600;"></div>
+                        </div>
+                    `;
+
+                    vidContainer.appendChild(vidBox);
+
+                    let qListDiv = vidBox.querySelector(`#official-q-list-${vIdx}`);
+                    vid.preguntas.forEach((q, qIdx) => {
+                        let qDiv = document.createElement('div');
+                        qDiv.className = 'teacher-suggested-q';
+                        qDiv.innerHTML = `<strong>P${qIdx+1}:</strong> ${q.pregunta}<br><span style="color:#059669; font-size:0.82rem;">Respuesta correcta: Opción ${String.fromCharCode(65 + q.correcta)}</span>`;
+                        qListDiv.appendChild(qDiv);
+                    });
+                });
+            }
+
+            switchView('view-teacher-config');
+        }
+
+        function addCustomTeacherQuestion(videoId, vIdx) {
+            let qText = document.getElementById(`custom-q-text-${vIdx}`).value.trim();
+            let optA = document.getElementById(`custom-q-a-${vIdx}`).value.trim();
+            let optB = document.getElementById(`custom-q-b-${vIdx}`).value.trim();
+            let optC = document.getElementById(`custom-q-c-${vIdx}`).value.trim();
+            let optD = document.getElementById(`custom-q-d-${vIdx}`).value.trim();
+            let correctIdx = parseInt(document.getElementById(`custom-q-correct-${vIdx}`).value);
+            let explanation = document.getElementById(`custom-q-exp-${vIdx}`).value.trim();
+
+            if(!qText || !optA || !optB || !optC || !optD || !explanation) {
+                alert('Por favor, complete todos los campos de la pregunta propuesta.');
+                return;
+            }
+
+            let newCustomQ = {
+                pregunta: qText,
+                opciones: [optA, optB, optC, optD],
+                correcta: correctIdx,
+                explicacion: explanation
+            };
+
+            if(!teacherCustomQuestions[videoId]) {
+                teacherCustomQuestions[videoId] = [];
+            }
+            teacherCustomQuestions[videoId].push(newCustomQ);
+
+            document.getElementById(`custom-q-status-${vIdx}`).textContent = `✔ ¡Pregunta propuesta agregada correctamente (${teacherCustomQuestions[videoId].length} adicional/es)!`;
+            
+            document.getElementById(`custom-q-text-${vIdx}`).value = '';
+            document.getElementById(`custom-q-a-${vIdx}`).value = '';
+            document.getElementById(`custom-q-b-${vIdx}`).value = '';
+            document.getElementById(`custom-q-c-${vIdx}`).value = '';
+            document.getElementById(`custom-q-d-${vIdx}`).value = '';
+            document.getElementById(`custom-q-exp-${vIdx}`).value = '';
+        }
+
+        function saveTeacherConfiguration() {
+            let payloadConfig = {
+                ...classroomConfig,
+                customQuestions: teacherCustomQuestions
+            };
+
+            db.ref('classes/' + classroomConfig.className).set({
+                config: payloadConfig,
+                createdAt: Date.now()
+            }, (error) => {
+                if(error) {
+                    alert('Error al conectar con la base de datos.');
+                } else {
+                    alert('¡Clase creada y configurada exitosamente!');
+                    listenToClassroomData();
+                    switchView('view-teacher-dashboard');
+                }
+            });
+        }
+
+        // --- INTERFAZ ADICIONAL: BANCO DE PREGUNTAS DEL CAPÍTULO ASIGNADO PARA LA DOCENTE ---
+        function openTeacherQuestionBank() {
+            if(!classroomConfig || !classroomConfig.chapterId) {
+                alert('No hay un capítulo activo seleccionado.');
+                return;
+            }
+
+            let capId = classroomConfig.chapterId;
+            let chapterData = bancoPreguntas[capId];
+            let container = document.getElementById('teacher-bank-detail-container');
+            
+            if(!chapterData) {
+                container.innerHTML = '<p>No se encontraron datos para este capítulo en pregunta.js.</p>';
+                switchView('view-teacher-bank-detail');
+                return;
+            }
+
+            let capTitleName = chapterNames[capId] || `Capítulo ${capId}`;
+            document.getElementById('teacher-bank-header-title').textContent = `Capítulo ${capId}: ${capTitleName} - Banco de Preguntas y Respuestas`;
+
+            let html = `
+                <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; border:1.5px solid var(--border-soft);">
+                    <h4 style="margin:0 0 0.5rem 0; color:#1e3a8a; font-family:Georgia, serif;">Capítulo ${capId}: ${capTitleName} (Clase: ${classroomConfig.className})</h4>
+                    <p style="margin:0; font-size:0.9rem;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
+                </div>
+            `;
+
+            chapterData.videos.forEach((video, vIdx) => {
+                let customQsForThisVid = (classroomConfig.customQuestions && classroomConfig.customQuestions[video.id]) ? classroomConfig.customQuestions[video.id] : [];
+                let allVideoQuestions = [...video.preguntas, ...customQsForThisVid];
+
+                html += `
+                    <div style="background:#fff; border:1.5px solid var(--border-strong); border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;">
+                        <h4 style="margin:0 0 0.3rem 0; color:#1e3a8a; font-family:Georgia, serif;">${video.titulo}</h4>
+                        <p style="margin:0 0 0.8rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${video.tema}</p>
+                        <p style="margin:0 0 1rem 0; font-size:0.88rem; background:#f1f5f9; padding:0.6rem; border-radius:6px;"><strong>Objetivo del Video:</strong> ${video.objetivoVideo}</p>
+                `;
+
+                allVideoQuestions.forEach((q, qIdx) => {
+                    let isCustomBadge = qIdx >= video.preguntas.length ? '<span style="background:#d1fae5; color:#065f46; font-size:0.75rem; padding:2px 6px; border-radius:4px; margin-left:6px;">Pregunta Propuesta por Docente</span>' : '';
+                    
+                    html += `
+                        <div style="margin-top:1rem; padding:1rem; background:#fffdf5; border:1px solid #fde047; border-radius:8px;">
+                            <div style="font-weight:700; font-size:0.92rem; margin-bottom:0.6rem;">Pregunta ${qIdx + 1}: ${q.pregunta} ${isCustomBadge}</div>
+                            <ul style="margin:0 0 0.6rem 0; padding-left:1.2rem; font-size:0.9rem;">
+                    `;
+
+                    q.opciones.forEach((opt, optIdx) => {
+                        let isCorrect = (optIdx === q.correcta);
+                        let optStyle = isCorrect ? 'color:#059669; font-weight:700; background:#d1fae5; padding:3px 8px; border-radius:4px;' : '';
+                        let optLetter = String.fromCharCode(65 + optIdx);
+                        html += `<li style="margin-bottom:0.3rem; ${optStyle}">${optLetter}) ${opt} ${isCorrect ? ' ✓ <strong>(Respuesta Correcta)</strong>' : ''}</li>`;
+                    });
+
+                    html += `
+                            </ul>
+                            <div style="font-size:0.85rem; color:#4b5563; font-style:italic; margin-top:0.5rem; background:#fff; padding:0.5rem; border-radius:6px; border:1px solid var(--border-soft);"><strong>Explicación:</strong> ${q.explicacion}</div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+            switchView('view-teacher-bank-detail');
+        }
+
+        // --- ESCUCHA DE DATOS EN TIEMPO REAL (FIREBASE) ---
+        function listenToClassroomData() {
+            if(!classroomConfig) return;
+
+            let capTitleFull = `Capítulo ${classroomConfig.chapterId}: ${chapterNames[classroomConfig.chapterId] || ''}`;
+
+            document.getElementById('docente-info-banner').innerHTML = `
+                📌 <strong>Clase Activa:</strong> ${classroomConfig.className} | 
+                👨‍🏫 <strong>Docente:</strong> ${classroomConfig.teacherName} | 
+                📖 <strong>Asignado:</strong> ${capTitleFull}
+            `;
+
+            db.ref('classes/' + classroomConfig.className + '/students').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                cachedStudentsData = data;
+                renderTeacherDashboardTable(data);
+                calculateTeacherStats(data);
+            });
+
+            db.ref('classes/' + classroomConfig.className + '/pageEvaluations').on('value', (snapshot) => {
+                const evalData = snapshot.val() || {};
+                renderPageEvaluationsStats(evalData);
+            });
+        }
+
+        function renderTeacherDashboardTable(studentsObj) {
+            const tbody = document.getElementById('students-table-body');
+            tbody.innerHTML = '';
+
+            let studentsList = [];
+            for(let sKey in studentsObj) {
+                studentsList.push(studentsObj[sKey]);
+            }
+
+            studentsList.sort((a, b) => b.score - a.score);
+
+            if(studentsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Aún no hay alumnos registrados en esta clase.</td></tr>`;
+                return;
+            }
+
+            studentsList.forEach((st, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${idx + 1}</strong></td>
+                    <td>${st.name}</td>
+                    <td>${st.code}</td>
+                    <td>Grupo ${st.group}</td>
+                    <td><strong style="color:${st.score >= 14 ? '#059669' : (st.score >= 10 ? '#d97706' : '#ef4444')}">${st.score.toFixed(1)} / 20</strong></td>
+                    <td>🟢 ${st.correctCount} aciertos / 🔴 ${st.errorCount} errores</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculateTeacherStats(studentsObj) {
+            let studentsList = Object.values(studentsObj);
+            if(studentsList.length === 0) {
+                document.getElementById('stat-most-correct').textContent = "Sin datos suficientes";
+                document.getElementById('stat-least-correct').textContent = "Sin datos suficientes";
+                return;
+            }
+
+            let questionStats = {};
+            studentsList.forEach(st => {
+                if(st.answersDetail) {
+                    st.answersDetail.forEach(ans => {
+                        let qKey = `P: ${ans.question}`;
+                        if(!questionStats[qKey]) questionStats[qKey] = { correct: 0, total: 0 };
+                        questionStats[qKey].total++;
+                        if(ans.isCorrect) questionStats[qKey].correct++;
+                    });
+                }
+            });
+
+            let bestQ = "N/A", worstQ = "N/A";
+            let maxRatio = -1, minRatio = 2;
+
+            for(let q in questionStats) {
+                let ratio = questionStats[q].correct / questionStats[q].total;
+                if(ratio > maxRatio) { maxRatio = ratio; bestQ = q; }
+                if(ratio < minRatio) { minRatio = ratio; worstQ = q; }
+            }
+
+            document.getElementById('stat-most-correct').textContent = maxRatio >= 0 ? `${bestQ} (${(maxRatio*100).toFixed(0)}% de aciertos)` : "N/A";
+            document.getElementById('stat-least-correct').textContent = minRatio <= 1 ? `${worstQ} (${((1-minRatio)*100).toFixed(0)}% de errores)` : "N/A";
+        }
+
+        function renderPageEvaluationsStats(evalObj) {
+            let evals = Object.values(evalObj);
+            const commentsContainer = document.getElementById('teacher-comments-container');
+            commentsContainer.innerHTML = '';
+
+            if(evals.length === 0) {
+                document.getElementById('stat-page-ratings').textContent = "Sin calificaciones aún";
+                document.getElementById('stat-comments-count').textContent = "0 comentarios registrados";
+                commentsContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aún no hay comentarios registrados.</p>`;
+                return;
+            }
+
+            let sumQ1 = 0, sumQ2 = 0, sumQ3 = 0;
+            evals.forEach(ev => {
+                sumQ1 += Number(ev.q1);
+                sumQ2 += Number(ev.q2);
+                sumQ3 += Number(ev.q3);
+
+                let cDiv = document.createElement('div');
+                cDiv.className = 'comment-item';
+                cDiv.innerHTML = `<strong>${ev.studentName}</strong> (Grupo ${ev.studentGroup}):<br>"${ev.comment}"`;
+                commentsContainer.appendChild(cDiv);
+            });
+
+            let avgQ1 = (sumQ1 / evals.length).toFixed(1);
+            let avgQ2 = (sumQ2 / evals.length).toFixed(1);
+            let avgQ3 = (sumQ3 / evals.length).toFixed(1);
+
+            document.getElementById('stat-page-ratings').textContent = `Interfaz: ${avgQ1}/5 | Videos: ${avgQ2}/5 | Cuestionario: ${avgQ3}/5`;
+            document.getElementById('stat-comments-count').textContent = `${evals.length} comentarios registrados`;
+        }
+
+        // --- ENTORNO DEL ESTUDIANTE (CON videos.js y pregunta.js) ---
+        function studentEnter() {
+            const name = document.getElementById('s-name').value.trim();
+            const code = document.getElementById('s-code').value.trim();
+            const group = document.getElementById('s-group').value;
+            const classname = document.getElementById('s-classname').value.trim();
+            const pass = document.getElementById('s-pass').value.trim();
+
+            if(!name || !code || !classname || !pass) {
+                alert('Por favor, complete todos los campos de acceso.');
+                return;
+            }
+
+            db.ref('classes/' + classname).once('value').then((snapshot) => {
+                if(!snapshot.exists()) {
+                    alert('La clase ingresada no existe o no ha sido creada por el docente.');
+                    return;
+                }
+
+                const classData = snapshot.val();
+                if(classData.config.pass !== pass) {
+                    alert('Contraseña incorrecta.');
+                    return;
+                }
+
+                currentStudent = {
+                    name,
+                    code,
+                    group,
+                    classname,
+                    chapterId: classData.config.chapterId
+                };
+
+                classroomConfig = classData.config;
+
+                document.getElementById('student-session-info').textContent = `${name} | Código: ${code} | Grupo ${group}`;
+                buildStudentWorkspace();
+                switchView('view-student-workspace');
+            });
+        }
+
+        function buildStudentWorkspace() {
+            let chapterId = currentStudent.chapterId;
+            let chapterData = bancoPreguntas[chapterId];
+            let capTitleFull = `Capítulo ${chapterId}: ${chapterNames[chapterId] || ''}`;
+            let svgIcon = chapterSvgs[chapterId] || chapterSvgs[1];
+
+            document.getElementById('workspace-chapter-banner').innerHTML = `
+                <div class="chapter-header-box">
+                    <div class="chapter-header-icon" style="background:${chapterColors[chapterId] || '#1e3a8a'}">${svgIcon}</div>
+                    <div>
+                        <h3 style="margin:0 0 0.3rem 0; font-family:Georgia, serif; color:var(--text-main);">${capTitleFull}</h3>
+                        <p style="margin:0 0 0.5rem 0; font-weight:600; font-size:0.9rem; color:#059669;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
+                        <div class="lab-info-card"><strong>Introducción para el laboratorio:</strong> ${chapterData.introLab}</div>
+                    </div>
+                </div>
+            `;
+
+            let vidContainer = document.getElementById('workspace-videos-container');
+            vidContainer.innerHTML = '';
+            activeQuestionsRendered = [];
+
+            chapterData.videos.forEach((vid, vIdx) => {
+                let videoObjUrl = (typeof videoMapping !== 'undefined' && videoMapping[vid.id]) ? videoMapping[vid.id] : "";
+                
+                let customQs = (classroomConfig.customQuestions && classroomConfig.customQuestions[vid.id]) ? classroomConfig.customQuestions[vid.id] : [];
+                let videoQuestionsToRender = [...vid.preguntas, ...customQs];
+
+                let vCard = document.createElement('div');
+                vCard.className = 'video-card';
+                vCard.innerHTML = `
+                    <div class="video-title-bar">${vid.titulo}</div>
+                    <div class="video-theme-bar"><strong>Tema:</strong> ${vid.tema}</div>
+                    <div class="video-responsive">
+                        <video controls preload="metadata" ${videoObjUrl ? '' : 'poster=""'}>
+                            <source src="${videoObjUrl}" type="video/mp4">
+                            Su navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <div class="video-objective-box"><strong>Objetivo del Video:</strong> ${vid.objetivoVideo}</div>
+                    
+                    <div class="quiz-container-box">
+                        <div class="quiz-title">Cuestionario de Evaluación del Video</div>
+                        <div id="quiz-items-${vIdx}"></div>
+                    </div>
+                `;
+
+                let qListContainer = vCard.querySelector(`#quiz-items-${vIdx}`);
+                videoQuestionsToRender.forEach((q, qIdx) => {
+                    let globalQId = `v${vIdx}_q${qIdx}`;
+                    activeQuestionsRendered.push({
+                        id: globalQId,
+                        questionText: q.pregunta,
+                        correctIndex: q.correcta,
+                        explanation: q.explicacion,
+                        videoId: vid.id
+                    });
+
+                    let qItem = document.createElement('div');
+                    qItem.className = 'quiz-question-item';
+                    
+                    let optsHtml = '';
+                    q.opciones.forEach((optText, optIdx) => {
+                        optsHtml += `
+                            <label class="quiz-option-label">
+                                <input type="radio" name="${globalQId}" value="${optIdx}">
+                                <span><strong>${String.fromCharCode(65 + optIdx)})</strong> ${optText}</span>
+                            </label>
+                        `;
+                    });
+
+                    qItem.innerHTML = `
+                        <div class="quiz-question-title">Pregunta ${qIdx + 1}: ${q.pregunta}</div>
+                        ${optsHtml}
+                    `;
+                    qListContainer.appendChild(qItem);
+                });
+
+                vidContainer.appendChild(vCard);
+            });
+        }
+
+        function proceedToPageEvaluation() {
+            let unanswered = 0;
+            activeQuestionsRendered.forEach(qObj => {
+                let selected = document.querySelector(`input[name="${qObj.id}"]:checked`);
+                if(!selected) unanswered++;
+            });
+
+            if(unanswered > 0) {
+                alert(`Tiene ${unanswered} pregunta(s) sin responder. Por favor complete todo el cuestionario antes de continuar.`);
+                return;
+            }
+
+            let correctCount = 0;
+            let errorCount = 0;
+            let answersDetail = [];
+
+            activeQuestionsRendered.forEach(qObj => {
+                let selected = document.querySelector(`input[name="${qObj.id}"]:checked`);
+                let selectedIdx = parseInt(selected.value);
+                let isCorrect = (selectedIdx === qObj.correctIndex);
+
+                if(isCorrect) correctCount++;
+                else errorCount++;
+
+                answersDetail.push({
+                    question: qObj.questionText,
+                    selectedIndex: selectedIdx,
+                    correctIndex: qObj.correctIndex,
+                    isCorrect: isCorrect,
+                    explanation: qObj.explanation
+                });
+            });
+
+            let totalQ = activeQuestionsRendered.length;
+            let finalScore = totalQ > 0 ? (correctCount / totalQ) * 20 : 0;
+
+            temporaryStudentScoreData = {
+                name: currentStudent.name,
+                code: currentStudent.code,
+                group: currentStudent.group,
+                score: finalScore,
+                correctCount,
+                errorCount,
+                answersDetail,
+                timestamp: Date.now()
+            };
+
+            switchView('view-page-evaluation');
+        }
+
+        function submitEvaluationAndGetResults() {
+            const q1 = document.getElementById('eval-q1').value;
+            const q2 = document.getElementById('eval-q2').value;
+            const q3 = document.getElementById('eval-q3').value;
+            const comment = document.getElementById('eval-comment').value.trim();
+
+            if(!comment) {
+                alert('Por favor, deje su comentario o sugerencia antes de continuar.');
+                return;
+            }
+
+            const evalPayload = {
+                studentName: currentStudent.name,
+                studentGroup: currentStudent.group,
+                q1, q2, q3,
+                comment,
+                timestamp: Date.now()
+            };
+
+            db.ref('classes/' + currentStudent.classname + '/pageEvaluations').push(evalPayload);
+
+            db.ref('classes/' + currentStudent.classname + '/students/' + currentStudent.code).set(temporaryStudentScoreData, (error) => {
+                if(error) {
+                    alert('Error al guardar su calificación.');
+                } else {
+                    renderStudentFeedbackView(temporaryStudentScoreData);
+                    switchView('view-student-feedback');
+                }
+            });
+        }
+
+        function renderStudentFeedbackView(data) {
+            let headerBox = document.getElementById('feedback-header-box');
+            let colorScore = data.score >= 14 ? '#059669' : (data.score >= 10 ? '#d97706' : '#ef4444');
+
+            headerBox.innerHTML = `
+                <h2 style="margin:0 0 0.5rem 0; color:${colorScore}; font-family:Georgia, serif;">¡Evaluación Completada, ${data.name}!</h2>
+                <p style="margin:0; font-size:1.1rem; font-weight:700;">Calificación Final: <span style="font-size:1.4rem; color:${colorScore};">${data.score.toFixed(1)} / 20</span></p>
+                <p style="margin:0.4rem 0 0 0; font-size:0.9rem; color:var(--text-muted);">🟢 Aciertos: ${data.correctCount} &nbsp;|&nbsp; 🔴 Errores: ${data.errorCount}</p>
+            `;
+
+            let detailsContainer = document.getElementById('feedback-details-container');
+            detailsContainer.innerHTML = `<h4 style="font-family:Georgia, serif; color:var(--text-main); margin-bottom:1rem;">Retroalimentación y Explicaciones Detalladas:</h4>`;
+
+            data.answersDetail.forEach((ans, idx) => {
+                let borderCol = ans.isCorrect ? '#86efac' : '#fca5a5';
+                let bgCol = ans.isCorrect ? '#f0fdf4' : '#fef2f2';
+                
+                let itemBox = document.createElement('div');
+                itemBox.style.cssText = `background:${bgCol}; border:1.5px solid ${borderCol}; border-radius:10px; padding:1.2rem; margin-bottom:1rem; font-size:0.9rem;`;
+                
+                itemBox.innerHTML = `
+                    <div style="font-weight:700; margin-bottom:0.4rem;">Pregunta ${idx + 1}: ${ans.question}</div>
+                    <div style="margin-bottom:0.4rem;">Estado: <strong style="color:${ans.isCorrect ? '#059669' : '#ef4444'}">${ans.isCorrect ? '✔ Correcto' : '✘ Incorrecto'}</strong></div>
+                    <div style="font-size:0.85rem; color:var(--text-muted); background:#fff; padding:0.6rem; border-radius:6px; border:1px solid var(--border-soft);"><strong>Explicación:</strong> ${ans.explanation}</div>
+                `;
+                detailsContainer.appendChild(itemBox);
+            });
+        }
+    </script>
+</body>
+</html>
