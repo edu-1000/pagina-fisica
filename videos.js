@@ -1,7 +1,7 @@
 // Archivo: videos.js
-// Mapeo oficial de los videos de demostración de Física (Capítulos 1 al 9) en Cloudinary
+// Mapeo oficial y global de los videos de demostración de Física (Capítulos 1 al 9) en Cloudinary
 
-const videoMapping = {
+window.videoMapping = {
     // ==========================================
     // CAPÍTULO 1: Vectores y Unidades
     // ==========================================
@@ -110,3 +110,6 @@ const videoMapping = {
     "v9_8": "https://res.cloudinary.com/k9vkrhtn/video/upload/v1793255250/CAPITULO%209/Copia_de_09-08_Cilindros_que_caen.mp4",
     "v9_9": "https://res.cloudinary.com/k9vkrhtn/video/upload/v1793255250/CAPITULO%209/Copia_de_09-09_Centro_de_masa_en_una_mesa_de_aire.mp4"
 };
+
+// Compatibilidad adicional
+const videoMapping = window.videoMapping;
