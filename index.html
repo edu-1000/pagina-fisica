@@ -621,7 +621,7 @@
 
     </div>
 
-    <!-- CARGA DE ARCHIVOS JS EXTERNOS EN LA MISMA CARPETA -->
+    <!-- CARGA DE ARCHIVOS JS EXTERNOS (VIDEOS Y PREGUNTAS) -->
     <script src="videos.js"></script>
     <script src="pregunta.js"></script>
 
@@ -659,13 +659,12 @@
             window.scrollTo(0, 0);
         }
 
-        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON LOGOTIPO Y TÍTULO LIMPIO ---
+        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON LOGOTIPO Y TÍTULO LIMPIO (DESDE pregunta.js) ---
         function renderChapterSelectionCards() {
             const container = document.getElementById('chapters-cards-container');
             if(!container || typeof bancoPreguntas === 'undefined') return;
             container.innerHTML = '';
 
-            // Títulos limpios oficiales para cada capítulo según el orden de tu banco
             const chapterNames = {
                 1: "Vectores y Unidades",
                 2: "Cinemática Unidimensional",
@@ -713,7 +712,7 @@
             }
         }
 
-        // --- CONFIGURACIÓN DE VIDEOS PARA EL DOCENTE ---
+        // --- CONFIGURACIÓN DE VIDEOS Y PREGUNTAS (DESDE pregunta.js) ---
         function goToTeacherConfig() {
             const teacherName = document.getElementById('t-teachername').value.trim();
             const className = document.getElementById('t-classname').value.trim();
@@ -740,24 +739,26 @@
             vidContainer.innerHTML = '';
 
             let chapterData = bancoPreguntas[selectedChapterId];
-            chapterData.videos.forEach((vid, vIdx) => {
-                let vidBox = document.createElement('div');
-                vidBox.className = 'teacher-config-video-card';
-                vidBox.innerHTML = `
-                    <h4 style="margin:0 0 0.3rem 0; color:var(--text-main); font-family:Georgia, serif;">${vid.titulo}</h4>
-                    <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${vid.tema}</p>
-                    <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; color:#1e3a8a;">Preguntas oficiales del banco asociadas a este video:</div>
-                `;
+            if(chapterData && chapterData.videos) {
+                chapterData.videos.forEach((vid, vIdx) => {
+                    let vidBox = document.createElement('div');
+                    vidBox.className = 'teacher-config-video-card';
+                    vidBox.innerHTML = `
+                        <h4 style="margin:0 0 0.3rem 0; color:var(--text-main); font-family:Georgia, serif;">${vid.titulo}</h4>
+                        <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted);"><strong>Tema:</strong> ${vid.tema}</p>
+                        <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.6rem; text-transform:uppercase; color:#1e3a8a;">Preguntas oficiales del banco asociadas a este video:</div>
+                    `;
 
-                vid.preguntas.forEach((q, qIdx) => {
-                    let qDiv = document.createElement('div');
-                    qDiv.className = 'teacher-suggested-q';
-                    qDiv.innerHTML = `<strong>P${qIdx+1}:</strong> ${q.pregunta}<br><span style="color:#059669; font-size:0.82rem;">Respuesta correcta: Opción ${String.fromCharCode(65 + q.correcta)}</span>`;
-                    vidBox.appendChild(qDiv);
+                    vid.preguntas.forEach((q, qIdx) => {
+                        let qDiv = document.createElement('div');
+                        qDiv.className = 'teacher-suggested-q';
+                        qDiv.innerHTML = `<strong>P${qIdx+1}:</strong> ${q.pregunta}<br><span style="color:#059669; font-size:0.82rem;">Respuesta correcta: Opción ${String.fromCharCode(65 + q.correcta)}</span>`;
+                        vidBox.appendChild(qDiv);
+                    });
+
+                    vidContainer.appendChild(vidBox);
                 });
-
-                vidContainer.appendChild(vidBox);
-            });
+            }
 
             switchView('view-teacher-config');
         }
@@ -777,7 +778,7 @@
             });
         }
 
-        // --- ABRIR VISTA DEL BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO ---
+        // --- INTERFAZ ADICIONAL: BANCO DE PREGUNTAS DEL CAPÍTULO ASIGNADO PARA LA DOCENTE ---
         function openTeacherQuestionBank() {
             if(!classroomConfig || !classroomConfig.chapterId) {
                 alert('No hay un capítulo activo seleccionado.');
@@ -789,7 +790,7 @@
             let container = document.getElementById('teacher-bank-detail-container');
             
             if(!chapterData) {
-                container.innerHTML = '<p>No se encontraron datos para este capítulo.</p>';
+                container.innerHTML = '<p>No se encontraron datos para este capítulo en pregunta.js.</p>';
                 switchView('view-teacher-bank-detail');
                 return;
             }
@@ -963,7 +964,7 @@
             document.getElementById('stat-comments-count').textContent = `${evals.length} comentarios registrados`;
         }
 
-        // --- ENTORNO DEL ESTUDIANTE ---
+        // --- ENTORNO DEL ESTUDIANTE (CON videos.js y pregunta.js) ---
         function studentEnter() {
             const name = document.getElementById('s-name').value.trim();
             const code = document.getElementById('s-code').value.trim();
@@ -1024,6 +1025,7 @@
             activeQuestionsRendered = [];
 
             chapterData.videos.forEach((vid, vIdx) => {
+                // Enlace automático con videoMapping definido en videos.js
                 let videoObjUrl = (typeof videoMapping !== 'undefined' && videoMapping[vid.id]) ? videoMapping[vid.id] : "";
 
                 let vCard = document.createElement('div');
