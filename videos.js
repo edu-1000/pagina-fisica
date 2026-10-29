@@ -111,5 +111,5 @@ window.videoMapping = {
     "v9_9": "https://res.cloudinary.com/k9vkrhtn/video/upload/v1793255250/CAPITULO%209/Copia_de_09-09_Centro_de_masa_en_una_mesa_de_aire.mp4"
 };
 
-// Compatibilidad adicional
+// Vinculación de compatibilidad global
 const videoMapping = window.videoMapping;
