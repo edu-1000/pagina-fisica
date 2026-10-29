@@ -169,8 +169,7 @@
         }
 
         .chapter-card-info { flex: 1; }
-        .chapter-card-title { font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 0.2rem; }
-        .chapter-card-desc { font-size: 0.84rem; color: var(--text-muted); line-height: 1.35; }
+        .chapter-card-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
         .chapter-arrow { color: var(--text-muted); font-size: 1.2rem; font-weight: 700; }
 
         .form-card {
@@ -430,7 +429,6 @@
         <div id="view-teacher-dashboard" class="view">
             <div class="alert-banner-docente" id="docente-info-banner"></div>
             
-            <!-- OPCIÓN ADICIONAL SOLICITADA PARA LA DOCENTE: VER BANCO DE PREGUNTAS DEL CAPÍTULO SELECCIONADO -->
             <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
                     <h3 style="margin:0; color:var(--text-main); font-family:Georgia, serif;">Panel de Control de la Clase</h3>
@@ -661,14 +659,41 @@
             window.scrollTo(0, 0);
         }
 
-        // --- RENDERIZAR TARJETAS DE CAPÍTULOS (DOCENTE) ---
+        // --- RENDERIZAR TARJETAS DE CAPÍTULOS CON LOGOTIPO Y TÍTULO LIMPIO ---
         function renderChapterSelectionCards() {
             const container = document.getElementById('chapters-cards-container');
             if(!container || typeof bancoPreguntas === 'undefined') return;
             container.innerHTML = '';
 
+            // Títulos limpios oficiales para cada capítulo según el orden de tu banco
+            const chapterNames = {
+                1: "Vectores y Unidades",
+                2: "Cinemática Unidimensional",
+                3: "Dinámica y Leyes de Newton",
+                4: "Movimiento en Dos Dimensiones",
+                5: "Trabajo y Energía",
+                6: "Cantidad de Movimiento y Colisiones",
+                7: "Rotación de Cuerpos Rígidos",
+                8: "Oscilaciones y Ondas",
+                9: "Termodinámica y Calor"
+            };
+
+            const chapterColors = {
+                1: "#1e3a8a",
+                2: "#7c3aed",
+                3: "#047857",
+                4: "#d97706",
+                5: "#dc2626",
+                6: "#0891b2",
+                7: "#4f46e5",
+                8: "#db2777",
+                9: "#57534e"
+            };
+
             for(let capId in bancoPreguntas) {
-                let data = bancoPreguntas[capId];
+                let titleName = chapterNames[capId] || `Capítulo ${capId}`;
+                let colorBg = chapterColors[capId] || '#1e3a8a';
+
                 let card = document.createElement('div');
                 card.className = `chapter-select-card ${capId == selectedChapterId ? 'selected' : ''}`;
                 card.onclick = () => {
@@ -678,10 +703,9 @@
                 };
 
                 card.innerHTML = `
-                    <div class="chapter-icon-badge" style="background:${capId == 1 ? '#059669' : '#1e3a8a'}">${capId}</div>
+                    <div class="chapter-icon-badge" style="background:${colorBg}">${capId}</div>
                     <div class="chapter-card-info">
-                        <div class="chapter-card-title">Capítulo ${capId}</div>
-                        <div class="chapter-card-desc">${data.objGeneral}</div>
+                        <div class="chapter-card-title">Capítulo ${capId}: ${titleName}</div>
                     </div>
                     <div class="chapter-arrow">➔</div>
                 `;
@@ -707,7 +731,6 @@
                 chapterId: selectedChapterId
             };
 
-            // Header info
             document.getElementById('teacher-config-header-info').innerHTML = `
                 <h3 style="color:#1e3a8a;">Configuración de Preguntas - Capítulo ${selectedChapterId}</h3>
                 <p style="font-size:0.88rem; color:var(--text-muted);">Clase: <strong>${className}</strong> | Docente: <strong>${teacherName}</strong></p>
@@ -771,11 +794,18 @@
                 return;
             }
 
+            const chapterNames = {
+                1: "Vectores y Unidades", 2: "Cinemática Unidimensional", 3: "Dinámica y Leyes de Newton",
+                4: "Movimiento en Dos Dimensiones", 5: "Trabajo y Energía", 6: "Cantidad de Movimiento y Colisiones",
+                7: "Rotación de Cuerpos Rígidos", 8: "Oscilaciones y Ondas", 9: "Termodinámica y Calor"
+            };
+
+            let capTitleName = chapterNames[capId] || `Capítulo ${capId}`;
+
             let html = `
                 <div style="background:#f8fafc; padding:1.2rem; border-radius:10px; margin-bottom:1.5rem; border:1.5px solid var(--border-soft);">
-                    <h4 style="margin:0 0 0.5rem 0; color:#1e3a8a; font-family:Georgia, serif;">Capítulo ${capId} Asignado a la Clase: ${classroomConfig.className}</h4>
-                    <p style="margin:0 0 0.5rem 0; font-size:0.9rem;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
-                    <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><strong>Introducción:</strong> ${chapterData.introLab}</p>
+                    <h4 style="margin:0 0 0.5rem 0; color:#1e3a8a; font-family:Georgia, serif;">Capítulo ${capId}: ${capTitleName} (Clase: ${classroomConfig.className})</h4>
+                    <p style="margin:0; font-size:0.9rem;"><strong>Objetivo General:</strong> ${chapterData.objGeneral}</p>
                 </div>
             `;
 
@@ -825,7 +855,6 @@
                 📖 <strong>Capítulo Asignado:</strong> ${classroomConfig.chapterId}
             `;
 
-            // Escuchar alumnos
             db.ref('classes/' + classroomConfig.className + '/students').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 cachedStudentsData = data;
@@ -833,7 +862,6 @@
                 calculateTeacherStats(data);
             });
 
-            // Escuchar evaluaciones y comentarios de la página
             db.ref('classes/' + classroomConfig.className + '/pageEvaluations').on('value', (snapshot) => {
                 const evalData = snapshot.val() || {};
                 renderPageEvaluationsStats(evalData);
